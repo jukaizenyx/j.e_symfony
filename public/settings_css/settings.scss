@@ -1,0 +1,116 @@
+/* Settings Page */
+
+.settings-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+}
+
+.settings-header {
+    margin: 30px 0;
+
+    h1 {
+        margin: 5px 0 8px;
+        font-size: 36px;
+    }
+
+    p {
+        margin: 0;
+        color: #777;
+    }
+}
+
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.settings-card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+    h2 {
+        margin: 5px 0 20px;
+        font-size: 22px;
+    }
+}
+
+.settings-card-header {
+    margin-bottom: 5px;
+}
+
+.settings-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 5px;
+    border-top: 1px solid #eee;
+    text-decoration: none;
+    color: #333;
+    transition: background 0.2s ease;
+
+    &:hover {
+        background: #faf7ef;
+    }
+
+    strong {
+        display: block;
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+
+    p {
+        margin: 0;
+        font-size: 14px;
+        color: #777;
+    }
+
+    span {
+        font-size: 20px;
+        color: #777;
+    }
+}
+
+.settings-logout {
+    color: #9b4b4b;
+
+    p {
+        color: #888;
+    }
+
+    span {
+        color: #9b4b4b;
+    }
+
+    &:hover {
+        background: #fff5f5;
+    }
+}
+
+@media (max-width: 600px) {
+    .settings-page {
+        padding: 25px 15px 50px;
+    }
+
+    .settings-header h1 {
+        font-size: 30px;
+    }
+
+    .settings-card {
+        padding: 20px;
+    }
+
+    .settings-option {
+        padding: 16px 3px;
+    }
+
+    .settings-option p {
+        font-size: 13px;
+    }
+}
+

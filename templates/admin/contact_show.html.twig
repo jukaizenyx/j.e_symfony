@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Customer Inquiry — Admin{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('shop_css/shop.css') }}"><link rel="stylesheet" href="{{ asset('admin_css/admin.css') }}">{% endblock %}
+
+{% block body %}
+    {% include '_admin_nav.html.twig' %}
+    <main class="admin-container">
+        <p><a href="{{ path('app_admin_index') }}">&larr; Back to dashboard</a></p>
+        <section class="inquiry-card{{ message.status == 'Unread' ? ' is-unread' : '' }}">
+            <div class="inquiry-header"><div><p class="admin-label">CUSTOMER INQUIRY</p><h1>{{ message.subject }}</h1><p class="inquiry-sender">{{ message.name }} · <a href="mailto:{{ message.email }}">{{ message.email }}</a></p></div><span class="inquiry-status inquiry-status-{{ message.status|lower }}">{{ message.status }}</span></div>
+            <p class="inquiry-date">{{ message.createdAt|date('M j, Y g:i A') }}</p>
+            <div class="inquiry-message">{{ message.message|nl2br }}</div>
+            <form method="post" action="{{ path('app_admin_contact_status', { id: message.id }) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('contact_status_' ~ message.id) }}">
+                <label>Status <select name="status"><option value="Unread" {% if message.status == 'Unread' %}selected{% endif %}>Unread</option><option value="Read" {% if message.status == 'Read' %}selected{% endif %}>Read</option></select></label>
+                <button type="submit" class="mark-read-btn">Update status</button>
+            </form>
+        </section>
+    </main>
+{% endblock %}

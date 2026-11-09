@@ -1,0 +1,13 @@
+<header class="site-nav">
+    <div class="site-nav-inner">
+        <a href="{{ path('app_home') }}" class="logo"><img src="{{ asset('images/je_logo.svg') }}" alt="J.E Essentials"></a>
+        <nav class="main-nav" id="mainNav">
+            <ul>
+                <li><a href="{{ path('app_admin_index') }}">DASHBOARD</a></li>
+                <li><a href="{{ path('app_admin_product_index') }}">PRODUCTS</a></li>
+                <li><a href="{{ path('app_logout') }}">LOG OUT</a></li>
+            </ul>
+        </nav>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+</header>

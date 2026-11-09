@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}J.E Essential Shop | Register Now{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('register_css/register.css') }}">{% endblock %}
+
+{% block body %}
+    {% include '_marketing_nav.html.twig' %}
+    <main class="main-register" id="top">
+        <header class="register-heading">
+            <h1>Welcome to J.E Essentials Shop!</h1>
+            <p>Please fill up the details below to register</p>
+        </header>
+        {{ form_start(form) }}
+            {{ form_errors(form) }}
+            {{ form_label(form.username, 'Username:') }}
+            {{ form_widget(form.username, { attr: { placeholder: 'Enter username', autocomplete: 'username' } }) }}
+            {{ form_errors(form.username) }}
+            <div class="name-info">
+                <div>{{ form_label(form.first_name, 'First Name:') }}{{ form_widget(form.first_name, { attr: { placeholder: 'Enter first name', autocomplete: 'given-name' } }) }}{{ form_errors(form.first_name) }}</div>
+                <div>{{ form_label(form.middle_name, 'Middle Name:') }}{{ form_widget(form.middle_name, { attr: { placeholder: 'Enter middle name' } }) }}{{ form_errors(form.middle_name) }}</div>
+                <div>{{ form_label(form.last_name, 'Last Name:') }}{{ form_widget(form.last_name, { attr: { placeholder: 'Enter last name', autocomplete: 'family-name' } }) }}{{ form_errors(form.last_name) }}</div>
+            </div>
+            {{ form_label(form.email, 'Email:') }}
+            {{ form_widget(form.email, { attr: { placeholder: 'Enter email', autocomplete: 'email' } }) }}
+            {{ form_errors(form.email) }}
+            {{ form_label(form.address, 'Address:') }}
+            {{ form_widget(form.address, { attr: { placeholder: 'Country, Province/State, City, Barangay, Street, Blk No./House No.' } }) }}
+            {{ form_errors(form.address) }}
+            <div class="pass-info">
+                {{ form_label(form.password, 'Password:') }}
+                <div class="password-field">
+                    {{ form_widget(form.password, { attr: { placeholder: 'Enter password', autocomplete: 'new-password' } }) }}
+                    <button type="button" class="password-toggle" data-target="{{ form.password.vars.id }}" aria-label="Show password">Show</button>
+                </div>
+                {{ form_errors(form.password) }}
+                {{ form_label(form.confirm_password, 'Confirm Password:') }}
+                <div class="password-field">
+                    {{ form_widget(form.confirm_password, { attr: { placeholder: 'Confirm your password', autocomplete: 'new-password' } }) }}
+                    <button type="button" class="password-toggle" data-target="{{ form.confirm_password.vars.id }}" aria-label="Show password">Show</button>
+                </div>
+                {{ form_errors(form.confirm_password) }}
+            </div>
+            {{ form_label(form.phone, 'Phone:') }}
+            {{ form_widget(form.phone, { attr: { placeholder: 'Enter phone number', autocomplete: 'tel' } }) }}
+            {{ form_errors(form.phone) }}
+            <div class="login-options">
+                <label class="login-checkbox">{{ form_widget(form.terms) }}<span>I have read and agree to the Terms and Conditions.</span></label>
+                {{ form_errors(form.terms) }}
+            </div>
+            {{ form_widget(form.submit, { attr: { value: 'Register' } }) }}
+        {{ form_end(form) }}
+        <div class="login-footer"><p>Already have an account? <a href="{{ path('app_login') }}">Log in here</a></p></div>
+    </main>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Your Cart — J.E Essentials{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('shop_css/shop.css') }}">{% endblock %}
+
+{% block body %}
+    {% include '_nav.html.twig' %}
+    <main class="simple-page">
+        <a href="{{ path('app_shop') }}" class="profile-back">&larr; Continue shopping</a>
+        <h1>Your Cart</h1>
+        {% if cart.items is empty %}
+            <p>Your cart is empty.</p><a href="{{ path('app_shop') }}" class="btn-primary">Browse the shop</a>
+        {% else %}
+            <div class="orders-list">
+                {% for item in cart.items %}
+                    <article class="order-card cart-page-item">
+                        <div class="cart-item">
+                            <img src="{{ asset(item.image) }}" alt="{{ item.name }}" class="cart-item-img">
+                            <div class="cart-item-info"><h2 class="cart-item-name">{{ item.name }}</h2><p class="cart-item-size">{{ item.size }} — ₱{{ item.price|number_format(2) }} each</p>
+                                <form method="post" action="{{ path('app_cart_action', { action: 'update' }) }}" class="cart-quantity-form">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('cart_action') }}"><input type="hidden" name="product_id" value="{{ item.product_id }}"><input type="hidden" name="size" value="{{ item.size }}">
+                                    <label>Quantity <input type="number" name="qty" value="{{ item.qty }}" min="0" max="20"></label><button type="submit">Update (0 removes)</button>
+                                </form>
+                            </div>
+                            <div class="cart-item-right"><p class="cart-item-price">₱{{ item.line_total|number_format(2) }}</p>
+                                <form method="post" action="{{ path('app_cart_action', { action: 'remove' }) }}"><input type="hidden" name="_token" value="{{ csrf_token('cart_action') }}"><input type="hidden" name="product_id" value="{{ item.product_id }}"><input type="hidden" name="size" value="{{ item.size }}"><input type="hidden" name="qty" value="1"><button type="submit" class="cart-item-remove">Remove</button></form>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+            <div class="cart-summary"><div class="cart-subtotal-row"><strong>Subtotal</strong><strong>₱{{ cart.subtotal|number_format(2) }}</strong></div><a href="{{ path('app_checkout') }}" class="btn-primary cart-checkout-btn">Checkout</a></div>
+        {% endif %}
+    </main>
+    {% include '_footer.html.twig' %}
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }} — J.E Essentials{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('shop_css/shop.css') }}"><link rel="stylesheet" href="{{ asset('admin_css/admin.css') }}"><link rel="stylesheet" href="{{ asset('admin_css/products.css') }}">{% endblock %}
+
+{% block body %}
+    {% include '_admin_nav.html.twig' %}
+    <main class="products-page">
+        <p><a href="{{ path('app_admin_product_index') }}">&larr; Back to products</a></p>
+        <h1>{{ title }}</h1>
+        {% for message in app.flashes('error') %}<div class="products-alert error" role="alert">{{ message }}</div>{% endfor %}
+        <div class="product-form">
+            {{ form_start(form) }}
+                {{ form_errors(form) }}
+                <div class="form-group">{{ form_label(form.name, 'Product Name') }}{{ form_widget(form.name) }}{{ form_errors(form.name) }}</div>
+                <div class="form-group">{{ form_label(form.description, 'Description') }}{{ form_widget(form.description) }}{{ form_errors(form.description) }}</div>
+                <div class="form-group">{{ form_label(form.image, 'Image Path') }}{{ form_widget(form.image, { attr: { placeholder: 'images/product.jpg' } }) }}{{ form_errors(form.image) }}</div>
+                <div class="sizes-section">
+                    <h2>Sizes &amp; Prices</h2>{{ form_errors(form.sizes) }}
+                    <div id="sizeContainer" data-prototype="{{ form_widget(form.sizes.vars.prototype)|e('html_attr') }}">
+                        {% for sizeForm in form.sizes %}
+                            <div class="size-row">{{ form_widget(sizeForm.size, { attr: { placeholder: 'Size', required: true } }) }}{{ form_widget(sizeForm.price, { attr: { placeholder: 'Price', min: 0, step: '0.01', required: true } }) }}<button type="button" class="remove-size">Remove</button></div>
+                        {% endfor %}
+                    </div>
+                    <button type="button" class="add-size" id="addSize">+ Add Size</button>
+                </div>
+                <button type="submit" class="product-submit">Save Product</button>
+                <a href="{{ path('app_admin_product_index') }}" class="cancel-edit">Cancel</a>
+            {{ form_end(form) }}
+        </div>
+    </main>
+    <script>
+        (() => {
+            const container = document.getElementById('sizeContainer');
+            const addButton = document.getElementById('addSize');
+            const existingIndexes = [...container.querySelectorAll('input[name]')]
+                .map(input => input.name.match(/\[(\d+)\]/))
+                .filter(Boolean)
+                .map(match => Number(match[1]));
+            let index = existingIndexes.length ? Math.max(...existingIndexes) + 1 : 0;
+            function addSize() {
+                const row = document.createElement('div');
+                row.className = 'size-row';
+                row.innerHTML = container.dataset.prototype.replace(/__size__/g, String(index++));
+                const controls = row.querySelectorAll('input');
+                controls[0].placeholder = 'Size';
+                controls[1].placeholder = 'Price';
+                controls[1].min = '0';
+                controls[1].step = '0.01';
+                row.insertAdjacentHTML('beforeend', '<button type="button" class="remove-size">Remove</button>');
+                container.append(row);
+            }
+            addButton.addEventListener('click', addSize);
+            container.addEventListener('click', event => {
+                if (event.target.matches('.remove-size')) {
+                    if (container.children.length === 1) {
+                        container.querySelectorAll('input').forEach(input => { input.value = ''; });
+                    } else {
+                        event.target.closest('.size-row').remove();
+                    }
+                }
+            });
+        })();
+    </script>
+{% endblock %}

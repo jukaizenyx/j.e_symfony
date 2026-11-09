@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ product.name }} — J.E Essentials{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('shop_css/shop.css') }}">{% endblock %}
+
+{% block body %}
+    {% include '_nav.html.twig' %}
+    <main class="simple-page">
+        <a href="{{ path('app_shop') }}" class="profile-back">&larr; Back to shop</a>
+        <article class="product-detail">
+            <img src="{{ asset(product.image) }}" alt="{{ product.name }}">
+            <div><h1>{{ product.name }}</h1><p>{{ product.description }}</p>
+                {% if sizes is not empty %}
+                    <form method="post" action="{{ path('app_cart_add_from_shop') }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('cart_action') }}"><input type="hidden" name="product_id" value="{{ product.id }}">
+                        <label>Size<select name="size" required>{% for size, amount in sizes %}<option value="{{ size }}">{{ size }} — ₱{{ amount|number_format(2) }}</option>{% endfor %}</select></label>
+                        <label>Quantity<input type="number" name="qty" value="1" min="1" max="20"></label>
+                        <button type="submit" class="btn-primary">Add to cart</button>
+                    </form>
+                {% endif %}
+            </div>
+        </article>
+    </main>
+    {% include '_footer.html.twig' %}
+{% endblock %}

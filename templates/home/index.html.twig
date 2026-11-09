@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}J.E Eullaran Essentials | Joy and Elegance in Every Touch{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('style_css/style.css') }}">{% endblock %}
+
+{% block body %}
+    {% include '_marketing_nav.html.twig' %}
+    <main id="top">
+        <section class="hero">
+            <div class="hero-inner">
+                <div class="hero-copy">
+                    <img class="hero-icon" src="{{ asset('images/hero-icon.svg') }}" alt="">
+                    <h1>Joy and Elegance<br>in Every Touch.</h1>
+                    <p class="hero-subtext">A minimalist skincare approach engineered with clean, powerful plant-based<br>botanical complexes to reveal your skin&rsquo;s raw, authentic radiance.</p>
+                    <div class="hero-actions">
+                        <div class="cta-shop"><a href="{{ path('app_shop') }}" class="shop-btn">SHOP COLLECTION</a><img src="{{ asset('images/white arrow.svg') }}" alt=""></div>
+                        <div class="cta-explore"><a href="#app" class="explore-btn">EXPLORE APP</a><img src="{{ asset('images/arrow.svg') }}" alt=""></div>
+                    </div>
+                    <ul class="hero-badges"><li>Dermatologically Tested</li><li>Cruelty Free</li><li>Premium Quality</li></ul>
+                </div>
+                <figure class="hero-media"><img src="{{ asset('images/hero-img.svg') }}" alt="Woman applying J.E Essentials cream moisturizer to her cheek"></figure>
+            </div>
+        </section>
+
+        <section class="journey" id="about">
+            <div class="journey-inner">
+                <p class="eyebrow">OUR JOURNEY</p>
+                <h2 id="journey-heading">Inspired by Healthy Skin. Driven by Confidence.</h2>
+                <p class="journey-subtxt">Discover the inspiration behind our commitment to simple, effective skincare.</p>
+                <hr>
+                <blockquote class="journey-quote">
+                    <p>&ldquo;J.E Essentials was created with a simple goal: to provide skincare<br>products that nourish, protect, and enhance natural beauty.</p>
+                    <p>We believe that everyone deserves high-quality skincare made with care,<br>helping people feel confident in their own skin every day.&rdquo;</p>
+                </blockquote>
+                <hr>
+                <p class="journey-detail">Every J.E Essentials batch begins with cold-pressed organic botanicals selected at the<br>peak of potency. By cold-processing our actives, we preserve the delicate enzymes and<br>nutrients your skin requires for true cellular rejuvenation.</p>
+                <a href="#about" class="link-underline">Learn more</a>
+            </div>
+        </section>
+
+        <section class="featured" id="featured">
+            <div class="featured-inner">
+                <header class="featured-head"><h2 id="featured-heading">FEATURED PRODUCTS</h2><p class="featured-subtxt">Meticulously crafted for target skin needs. Safe for the most delicate complexions.</p></header>
+                <ul class="product-grid">
+                    {% set featured = [
+                        {image: 'first-png.svg', name: 'Cream Moisturizer', price: 199},
+                        {image: 'second-png.svg', name: 'Shea Butter Scrub', price: 299},
+                        {image: 'third-png.svg', name: 'Whitening Lotion', price: 399},
+                        {image: 'fouth-png.svg', name: 'Rejuvinating Spray', price: 249}
+                    ] %}
+                    {% for product in featured %}
+                        <li class="product-card{% if loop.index == 3 %} product-card--featured{% endif %}">
+                            <img src="{{ asset('images/' ~ product.image) }}" alt="{{ product.name }}">
+                            <h3>{{ product.name }}</h3>
+                            <p class="price">&#8369;{{ product.price }}</p>
+                            <a href="{{ path('app_shop') }}" class="view-btn">View Product<img src="{{ asset('images/arrow.svg') }}" alt=""></a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="center"><a href="{{ path('app_shop') }}" class="featured-shop-btn">SHOP COLLECTION</a><img src="{{ asset('images/white arrow.svg') }}" alt=""></div>
+            </div>
+        </section>
+
+        <section class="ingredient-sec"><ul class="ingredient-strip">
+            <li><img src="{{ asset('images/rose.svg') }}" alt="">Wild Rosehip</li>
+            <li><img src="{{ asset('images/water.svg') }}" alt="">Multi-Weight Hyaluronic</li>
+            <li><img src="{{ asset('images/sun.svg') }}" alt="">Stabilized Vitamin C</li>
+        </ul></section>
+
+        <section class="app-promo" id="app">
+            <div class="app-promo-inner">
+                <div class="app-promo-copy">
+                    <h2 id="app-heading">J.E Essentials <span>Mobile App</span></h2>
+                    <p>Shop your favorite skincare products, track your orders, and receive exclusive deals all in one place.</p>
+                    <div class="store-badges"><a href="#app" class="store-badge"><img src="{{ asset('images/appstore_icon.svg') }}" alt="Download on the App Store"></a><a href="#app" class="store-badge"><img src="{{ asset('images/googlplay_icon.svg') }}" alt="Get it on Google Play"></a></div>
+                    <p class="app-cta">DOWNLOAD OUR APP TODAY!</p>
+                </div>
+                <figure class="app-promo-media"><img src="{{ asset('images/app-icon 1.svg') }}" alt="J.E Essentials mobile app shown on a smartphone screen"></figure>
+            </div>
+        </section>
+
+        <section class="testimonials"><div class="wrap">
+            <header class="testimonial-head"><p class="eyebrow">KIND WORDS</p><h2>Real Stories. Radiant Skin.</h2></header>
+            <ul class="testimonial-grid">
+                <li class="testimonial-card"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><blockquote><p>&ldquo;My chronic dry skin is completely transformed. The Cream Moisturizer feels like pure comfort in a jar. My complexion hasn&rsquo;t been this radiant in years.&rdquo;</p></blockquote><footer><cite>Sophia L.</cite><span class="testimonial-meta">Using Cream Moisturizer for 4 weeks</span></footer></li>
+                <li class="testimonial-card"><div class="stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><blockquote><p>&ldquo;The Shea Butter Scrub has healed my skin barrier entirely. I wake up with a soft, supple glow instead of raw redness. Truly a luxury spa experience at home.&rdquo;</p></blockquote><footer><cite>Isabella M.</cite><span class="testimonial-meta">Using Golden Elixir Oil for 6 weeks</span></footer></li>
+                <li class="testimonial-card"><div class="stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><blockquote><p>&ldquo;The rejuvinating spray has given my skin a glow I didn&rsquo;t think was possible. Fine lines around my eyes have visibly softened. This is my forever product.&rdquo;</p></blockquote><footer><cite>Charlotte R.</cite><span class="testimonial-meta">Using Golden Elixir Oil for 8 weeks</span></footer></li>
+            </ul>
+        </div></section>
+
+        <section class="contact" id="contact">
+            <div class="contact-header"><h2 id="contact-heading">Your Glow Starts With a Conversation.</h2><p class="contact-subtxt">Every question, suggestion, and collaboration matters to us. Reach out through the form below, and let us help you on your skincare journey.</p></div>
+            <div class="contact-inner">
+                <div class="contact-form-wrap">
+                    {% for message in app.flashes('contact_success') %}<div class="contact-success">{{ message }}</div>{% endfor %}
+                    {{ form_start(contactForm, { action: path('app_contact_create'), attr: { class: 'contact-form' } }) }}
+                        <div class="form-row"><label for="{{ contactForm.name.vars.id }}">Full name</label>{{ form_widget(contactForm.name, { attr: { required: true } }) }}{{ form_errors(contactForm.name) }}</div>
+                        <div class="form-row"><label for="{{ contactForm.email.vars.id }}">Email Address</label>{{ form_widget(contactForm.email, { attr: { required: true } }) }}{{ form_errors(contactForm.email) }}</div>
+                        <div class="form-row"><label for="{{ contactForm.subject.vars.id }}">Subject</label>{{ form_widget(contactForm.subject, { attr: { required: true } }) }}{{ form_errors(contactForm.subject) }}</div>
+                        <div class="form-row"><label for="{{ contactForm.message.vars.id }}">Message</label>{{ form_widget(contactForm.message, { attr: { rows: 5, required: true } }) }}{{ form_errors(contactForm.message) }}</div>
+                        <button type="submit" class="submit-btn">SUBMIT</button>
+                    {{ form_end(contactForm) }}
+                </div>
+                <div class="contact-map"><p class="map-subtxt">Prefer to visit us? Come say hello at our office.</p><div class="map-embed"><iframe title="Map showing J.E Eullaran Essentials office in Calindagan, Dumaguete City" src="https://maps.google.com/maps?q=Calindagan,%20Dumaguete%20City,%20Philippines&t=&z=14&ie=UTF8&iwloc=&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></div>
+            </div>
+        </section>
+        <section class="lifestyles"><div class="lifestyles-wrap">
+            <p class="lifestyle-brow">J.E Eullaran Essentials</p><h2 id="lifestyle-heading">Luminous Lifestyles</h2>
+            <p class="lifestyle-subtxt">Follow our slow living journey on Instagram <a href="https://instagram.com/jessentials">@jessentials</a></p>
+            <ul class="lifestyle-gallery">
+                {% for image in ['rectangle_1.svg', 'reactangle_2.svg', 'rectangle_3.svg', 'rectangle_5.svg', 'rectangle_66.svg'] %}<li><img src="{{ asset('images/' ~ image) }}" alt="J.E Essentials skincare and botanical ingredients"></li>{% endfor %}
+            </ul>
+        </div></section>
+    </main>
+    {% include '_footer.html.twig' %}
+{% endblock %}

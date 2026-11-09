@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard — J.E Essentials{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('shop_css/shop.css') }}"><link rel="stylesheet" href="{{ asset('dashboard_css/dashboard.css') }}">{% endblock %}
+
+{% block body %}
+    {% include '_nav.html.twig' %}
+    <main class="simple-page">
+        <a href="{{ path('app_shop') }}" class="profile-back">&larr; Go back to shop</a>
+        <h1>Orders</h1>
+        <p class="simple-page-sub">Welcome back, {{ app.user.username }}.</p>
+        {% if notifications is not empty %}
+            <section class="notifications-panel"><h2>Notifications</h2>
+                {% for notification in notifications %}
+                    <p>{{ notification.message }} <small>{{ notification.createdAt|date('M j, Y \\a\\t g:i A') }}</small></p>
+                {% endfor %}
+            </section>
+        {% endif %}
+        {% if orders is empty %}
+            <div class="orders-empty"><p>No orders yet. Once you check out, they&rsquo;ll show up here.</p><a href="{{ path('app_shop') }}" class="btn-primary">Browse the shop</a></div>
+        {% else %}
+            <div class="orders-list">
+                {% for order in orders %}
+                    {% set statusClass = order.status|lower|replace({' ': '-'}) %}
+                    <article class="order-card" data-order-id="{{ order.id }}" data-status="{{ order.status }}">
+                        <header class="order-card__head">
+                            <div class="order-card__id"><span class="order-card__label">Order</span><span class="order-card__number">#{{ order.id }}</span></div>
+                            <time class="order-card__date">{{ order.createdAt|date('M j, Y \\a\\t g:i A') }}</time>
+                            <span class="order-status order-status--{{ statusClass }}">{{ order.status|title }}</span>
+                        </header>
+                        <ul class="order-card__items">
+                            {% for item in order.items %}
+                                <li class="order-item"><span class="order-item__name">{{ item.name }}</span><span class="order-item__qty">&times;{{ item.quantity }}</span><span class="order-item__price">₱{{ (item.price * item.quantity)|number_format(2) }}</span></li>
+                            {% endfor %}
+                        </ul>
+                        <footer class="order-card__foot">
+                            <div class="order-card__total"><span>Total</span><strong>₱{{ order.total|number_format(2) }}</strong></div>
+                            {% if order.status == 'pending' %}
+                                <form method="post" action="{{ path('app_account_order_cancel', { id: order.id }) }}" onsubmit="return confirm('Cancel this order? This can’t be undone.');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('cancel_order_' ~ order.id) }}">
+                                    <button type="submit" class="btn-cancel-order">Cancel order</button>
+                                </form>
+                            {% endif %}
+                            <a class="order-details-link" href="{{ path('app_account_order_show', { id: order.id }) }}">View details</a>
+                        </footer>
+                    </article>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </main>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Order #{{ order.id }} — J.E Essentials{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('shop_css/shop.css') }}"><link rel="stylesheet" href="{{ asset('dashboard_css/dashboard.css') }}">{% endblock %}
+
+{% block body %}
+    {% include '_nav.html.twig' %}
+    <main class="simple-page">
+        <a href="{{ path('app_account_orders') }}" class="profile-back">&larr; Back to orders</a>
+        <h1>Order #{{ order.id }}</h1>
+        <article class="order-card">
+            <header class="order-card__head"><div class="order-card__id"><span class="order-card__label">Status</span><span class="order-status order-status--{{ order.status|lower|replace({' ': '-'}) }}">{{ order.status|title }}</span></div><time class="order-card__date">{{ order.createdAt|date('M j, Y \\a\\t g:i A') }}</time></header>
+            <section><h2>Delivery details</h2><p>{{ order.fullName }} · {{ order.email }} · {{ order.phone }}</p><p>{{ order.address }}</p><p>Payment: {{ order.paymentMethod }}</p></section>
+            <ul class="order-card__items">
+                {% for item in order.items %}
+                    <li class="order-item"><span class="order-item__name">{{ item.name }}{% if item.size %} ({{ item.size }}){% endif %}</span><span class="order-item__qty">&times;{{ item.quantity }}</span><span class="order-item__price">₱{{ (item.price * item.quantity)|number_format(2) }}</span></li>
+                {% endfor %}
+            </ul>
+            <footer class="order-card__foot"><div class="order-card__total"><span>Total</span><strong>₱{{ order.total|number_format(2) }}</strong></div>
+                {% if order.status == 'pending' %}
+                    <form method="post" action="{{ path('app_account_order_cancel', { id: order.id }) }}" onsubmit="return confirm('Cancel this order? This can’t be undone.');"><input type="hidden" name="_token" value="{{ csrf_token('cancel_order_' ~ order.id) }}"><button type="submit" class="btn-cancel-order">Cancel order</button></form>
+                {% endif %}
+            </footer>
+        </article>
+    </main>
+{% endblock %}

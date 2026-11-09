@@ -1,25 +1,50 @@
-
 services:
-###> doctrine/doctrine-bundle ###
-  database:
-    image: postgres:${POSTGRES_VERSION:-16}-alpine
+  je_essentials_mysql:
+    image: mysql:latest
+    container_name: je_essentials_mysql
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      # You should definitely change the password in production
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
-      POSTGRES_USER: ${POSTGRES_USER:-app}
-    healthcheck:
-      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
-      timeout: 5s
-      retries: 5
-      start_period: 60s
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      - database_data:/var/lib/postgresql/data:rw
-      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
-      # - ./docker/db/data:/var/lib/postgresql/data:rw
-###< doctrine/doctrine-bundle ###
+      - je-essentials-db-data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    networks:
+      - je-network
+
+  je_essentials_phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: je_essentials_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: je_essentials_mysql
+    ports:
+      - "8080:80"
+    networks:
+      - je-network
+
+  je_essentials_php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: je_essentials_php
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8000:8000"
+    command: php -S 0.0.0.0:8000 -t public public/index.php
+    depends_on:
+      - je_essentials_mysql
+    networks:
+      - je-network
 
 volumes:
-###> doctrine/doctrine-bundle ###
-  database_data:
-###< doctrine/doctrine-bundle ###
+  je-essentials-db-data:
+
+networks:
+  je-network:

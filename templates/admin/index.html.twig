@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Dashboard — J.E Essentials{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('shop_css/shop.css') }}"><link rel="stylesheet" href="{{ asset('style_css/style.css') }}"><link rel="stylesheet" href="{{ asset('admin_css/admin.css') }}">{% endblock %}
+
+{% block body %}
+    {% include '_admin_nav.html.twig' %}
+    <main class="admin-container">
+        <div class="admin-heading"><h2>Admin Dashboard</h2><p>Manage customer orders, product listings, and inquiries.</p><p><a href="{{ path('app_admin_product_index') }}">Manage products</a></p></div>
+        {% for message in app.flashes('success') %}<div class="update-message" role="status">{{ message }}</div>{% endfor %}
+        {% for message in app.flashes('error') %}<div class="update-message error" role="alert">{{ message }}</div>{% endfor %}
+        <section class="stats-grid">
+            {% for label, amount in {'Total Orders': statistics.total, 'Pending': statistics.pending, 'Approved': statistics.approved, 'Completed': statistics.completed} %}
+                <div class="stat-card"><span class="stat-label">{{ label }}</span><span class="stat-number">{{ amount }}</span></div>
+            {% endfor %}
+        </section>
+        <section class="orders-section">
+            <div class="orders-section-header"><h3>Orders</h3><span class="orders-count">{{ orders|length }} {{ orders|length == 1 ? 'order' : 'orders' }}</span></div>
+            {% if orders is empty %}
+                <div class="empty-orders"><p>No orders have been placed yet.</p></div>
+            {% else %}
+                <div class="orders-list">
+                    <div class="order-row order-row-header"><span>Order</span><span>Customer</span><span>Total</span><span>Date</span><span>Status</span><span>Action</span></div>
+                    {% for order in orders %}
+                        <div class="order-row">
+                            <div class="order-number">#{{ order.id }}</div>
+                            <div><div class="customer-name">{{ order.fullName }}</div><div class="customer-email">{{ order.email }}</div></div>
+                            <div class="order-total">₱{{ order.total|number_format(2) }}</div>
+                            <div class="order-date">{{ order.createdAt|date('M j, Y') }}</div>
+                            <div><span class="status-badge status-{{ order.status|lower|replace({' ': '-'}) }}">{{ order.status|title }}</span></div>
+                            <div><a class="view-order-btn" href="{{ path('app_admin_order_show', { id: order.id }) }}">View</a></div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </section>
+        <section class="inquiries-section">
+            <div class="inquiries-section-header"><div><h3>Customer Inquiries</h3><span class="inquiries-count">{{ messages|length }} {{ messages|length == 1 ? 'inquiry' : 'inquiries' }}</span></div>{% if unreadCount > 0 %}<span class="unread-count">{{ unreadCount }} unread</span>{% endif %}</div>
+            {% if messages is empty %}
+                <div class="empty-inquiries"><p>No customer inquiries yet.</p></div>
+            {% else %}
+                <div class="inquiries-list">
+                    {% for message in messages %}
+                        <article class="inquiry-card{{ message.status == 'Unread' ? ' is-unread' : '' }}">
+                            <div class="inquiry-header"><div><h4><a href="{{ path('app_admin_contact_show', { id: message.id }) }}">{{ message.subject }}</a></h4><p class="inquiry-sender">{{ message.name }} · {{ message.email }}</p></div><span class="inquiry-status inquiry-status-{{ message.status|lower }}">{{ message.status }}</span></div>
+                            <div class="inquiry-message">{{ message.message|nl2br }}</div>
+                            <div class="inquiry-footer"><span class="inquiry-date">{{ message.createdAt|date('M j, Y g:i A') }}</span>
+                                <form method="post" action="{{ path('app_admin_contact_status', { id: message.id }) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('contact_status_' ~ message.id) }}"><input type="hidden" name="status" value="{{ message.status == 'Unread' ? 'Read' : 'Unread' }}">
+                                    <button type="submit" class="{{ message.status == 'Unread' ? 'mark-read-btn' : 'mark-unread-btn' }}">{{ message.status == 'Unread' ? 'Mark as Read' : 'Mark as Unread' }}</button>
+                                </form>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </section>
+    </main>
+{% endblock %}

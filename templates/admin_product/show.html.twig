@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ product.name }} — Product Admin{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('shop_css/shop.css') }}"><link rel="stylesheet" href="{{ asset('admin_css/admin.css') }}"><link rel="stylesheet" href="{{ asset('admin_css/products.css') }}">{% endblock %}
+
+{% block body %}
+    {% include '_admin_nav.html.twig' %}
+    <main class="products-page">
+        <p><a href="{{ path('app_admin_product_index') }}">&larr; Back to products</a></p>
+        <div class="product-form">
+            <div class="product-detail"><img src="{{ asset(product.image) }}" alt="{{ product.name }}"><div><h1>{{ product.name }}</h1><p>{{ product.description }}</p><p>Base price: ₱{{ product.price|number_format(2) }}</p>
+                <div class="sizes-list">{% for size, price in sizes %}<span>{{ size }} — ₱{{ price|number_format(2) }}</span>{% endfor %}</div>
+                <p><a href="{{ path('app_admin_product_edit', { id: product.id }) }}" class="edit-btn">Edit product</a></p>
+            </div></div>
+        </div>
+    </main>
+{% endblock %}

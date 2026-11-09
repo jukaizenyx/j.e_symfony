@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Login — J.E Essentials{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('login_css/login.css') }}">{% endblock %}
+
+{% block body %}
+    {% include '_marketing_nav.html.twig' %}
+    <main class="main-login" id="top">
+        <header class="login-heading">
+            <h1>Welcome to J.E Essentials Shop!</h1>
+            <p>Please log in to continue</p>
+        </header>
+        {% for message in app.flashes('success') %}<div class="login-error" role="status">{{ message }}</div>{% endfor %}
+        {% if error %}<div class="login-error" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}</div>{% endif %}
+        <form method="post" action="{{ path('app_login') }}">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+            <label for="login_id">Username or Email:</label>
+            <input type="text" name="login_id" id="login_id" value="{{ last_username }}" placeholder="Enter username or email" required autofocus>
+            <label for="password">Password:</label>
+            <div class="password-field">
+                <input type="password" name="password" id="password" placeholder="Enter password" required>
+                <button type="button" class="password-toggle" data-target="password" aria-label="Show password">
+                    <svg class="eye-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M2 12C2 12 5.5 5 12 5C18.5 5 22 12 22 12C22 12 18.5 19 12 19C5.5 19 2 12 2 12Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+                </button>
+            </div>
+            <div class="login-options">
+                <label class="login-checkbox"><input type="checkbox" name="remember"><span>Keep me signed in</span></label>
+            </div>
+            <input type="submit" value="Login" name="login">
+        </form>
+        <div class="login-footer"><p>Don&rsquo;t have an account? <a href="{{ path('app_register') }}">Register here</a></p></div>
+    </main>
+{% endblock %}

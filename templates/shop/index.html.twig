@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}J.E Essentials Shop{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('shop_css/shop.css') }}">{% endblock %}
+
+{% block body %}
+    {% include '_nav.html.twig' %}
+    <main id="top">
+        <section class="hero">
+            <div class="hero-copy">
+                <p class="hero-kicker">New Products</p>
+                <h1>Joy and Elegance in Every Touch</h1>
+                <p class="hero-lede">A minimalist skincare approach engineered with clean, powerful plant-based botanical complexes to reveal your skin&rsquo;s raw, authentic radiance.</p>
+                <a href="#products-heading" class="btn-primary">See our products</a>
+            </div>
+            <div class="hero-visual" aria-hidden="true">
+                <div class="hero-card hero-card-1"><img src="{{ asset('images/rectangle_3.svg') }}" alt=""></div>
+                <div class="hero-card hero-card-2"><img src="{{ asset('images/rectangle_66.svg') }}" alt=""></div>
+                <div class="hero-card hero-card-3"><img src="{{ asset('images/reactangle_2.svg') }}" alt=""></div>
+            </div>
+        </section>
+        <section class="products" aria-labelledby="products-heading">
+            <div class="section-heading-row"><h2 id="products-heading">Skincare Products</h2></div>
+            {% if usingFallbackCatalog %}
+                <p class="catalog-notice" role="status">Showing the original product collection while the database catalog is unavailable.</p>
+            {% endif %}
+            <div class="product-grid">
+                {% for item in products %}
+                    {% set product = item.product %}
+                    {% set firstPrice = item.sizes|first %}
+                    <article class="product-card">
+                        <figure class="product-image product-image-{{ loop.index0 }}"><img src="{{ asset(product.image) }}" alt="{{ product.name }}"></figure>
+                        <div class="product-info"><h3>{{ product.name }}</h3><p class="product-price">₱{{ firstPrice|default(0)|number_format(0) }}</p></div>
+                        <button type="button" class="btn-add" data-product-id="{{ product.id }}" aria-label="View {{ product.name }} options">Add to cart</button>
+                    </article>
+                {% else %}
+                    <p>No products are currently available.</p>
+                {% endfor %}
+            </div>
+        </section>
+        <section class="story" id="story" aria-labelledby="story-heading">
+            <div class="story-visual" aria-hidden="true"><img src="{{ asset('images/rectangle_5.svg') }}" alt=""></div>
+            <div class="story-copy">
+                <h2 id="story-heading">Made to be used, not displayed</h2>
+                <p>We started J.E Essentials because we kept buying things that looked good in photos and felt disappointing at home. Everything here is tested in our own kitchens and bathrooms first — if it doesn&rsquo;t earn its place on the counter, it doesn&rsquo;t make it to the shop.</p>
+                <p>Every piece is sourced from small workshops we&rsquo;ve visited ourselves, working with clay, cotton, and soy wax rather than synthetics.</p>
+            </div>
+        </section>
+        <section class="newsletter" id="contact" aria-labelledby="newsletter-heading">
+            <h2 id="newsletter-heading">Get first look at new drops</h2>
+            <p>One email a month. No noise, just what&rsquo;s new and what&rsquo;s back in stock.</p>
+            <form class="newsletter-form">
+                <label for="newsletter-email" class="visually-hidden">Email address</label>
+                <input type="email" id="newsletter-email" name="email" placeholder="you@email.com" required>
+                <button type="submit">Subscribe</button>
+            </form>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="productModalOverlay">
+        <div class="modal product-modal" role="dialog" aria-modal="true" aria-labelledby="productModalTitle">
+            <button type="button" class="modal-close" id="productModalClose" aria-label="Close">&times;</button>
+            <div class="product-modal-body">
+                <div class="zoom-wrap" id="zoomWrap">
+                    <div class="zoom-frame" id="zoomFrame"><img id="productModalImage" src="" alt=""><div class="zoom-pane" id="zoomPane"></div></div>
+                    <p class="zoom-hint">Hover image to zoom</p>
+                </div>
+                <div class="product-modal-details">
+                    <h2 id="productModalTitle"></h2>
+                    <p class="product-modal-price" id="productModalPrice"></p>
+                    <p class="product-modal-desc" id="productModalDesc"></p>
+                    <div class="option-group"><span class="option-label">Size</span><div class="size-options" id="sizeOptions"></div></div>
+                    <div class="option-group">
+                        <span class="option-label">Quantity</span>
+                        <div class="qty-stepper">
+                            <button type="button" class="qty-btn" id="qtyMinus" aria-label="Decrease quantity">−</button>
+                            <input type="number" id="qtyInput" value="1" min="1" max="20" inputmode="numeric">
+                            <button type="button" class="qty-btn" id="qtyPlus" aria-label="Increase quantity">+</button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-primary modal-add-btn" id="modalAddToCart">Add to Cart</button>
+                    <p class="modal-add-error" id="modalAddError" role="alert"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script id="je-products" type="application/json">{{ clientProducts|json_encode(constant('JSON_HEX_TAG') + constant('JSON_HEX_APOS') + constant('JSON_HEX_AMP') + constant('JSON_HEX_QUOT'))|raw }}</script>
+    {% include '_footer.html.twig' %}
+{% endblock %}

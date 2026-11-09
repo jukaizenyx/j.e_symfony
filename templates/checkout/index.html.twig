@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Checkout — J.E Essentials{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('shop_css/shop.css') }}"><link rel="stylesheet" href="{{ asset('checkout_css/checkout.css') }}">{% endblock %}
+
+{% block body %}
+    {% include '_nav.html.twig' %}
+    <main class="checkout-page">
+        <a href="{{ path('app_shop') }}" class="checkout-back">&larr; Continue shopping</a>
+        <header class="checkout-header">
+            <p class="checkout-eyebrow">J.E ESSENTIALS</p>
+            <h1>Checkout</h1>
+            <p>Complete your details to place your order.</p>
+        </header>
+        {{ form_start(form, { attr: { enctype: 'multipart/form-data' } }) }}
+            {{ form_errors(form) }}
+            <div class="checkout-layout">
+                <section class="checkout-form-card">
+                    <div class="checkout-section-title"><p>DELIVERY</p><h2>Customer Information</h2></div>
+                    <div class="checkout-form-grid">
+                        <div class="checkout-form-group">{{ form_label(form.full_name, 'Full name') }}{{ form_widget(form.full_name, { attr: { autocomplete: 'name' } }) }}{{ form_errors(form.full_name) }}</div>
+                        <div class="checkout-form-group">{{ form_label(form.email, 'Email address') }}{{ form_widget(form.email, { attr: { autocomplete: 'email' } }) }}{{ form_errors(form.email) }}</div>
+                        <div class="checkout-form-group">{{ form_label(form.phone, 'Phone number') }}{{ form_widget(form.phone, { attr: { autocomplete: 'tel' } }) }}{{ form_errors(form.phone) }}</div>
+                    </div>
+                    <div class="checkout-section-title checkout-address-title"><p>DELIVERY ADDRESS</p><h2>Where should we deliver?</h2></div>
+                    <div class="address-options">
+                        {% for choice in form.address_type %}
+                            <label class="address-option">{{ form_widget(choice) }}<span>{{ choice.vars.label }}{% if choice.vars.value == 'profile' and savedAddress %}<small>{{ savedAddress }}</small>{% endif %}</span></label>
+                        {% endfor %}
+                    </div>
+                    {{ form_errors(form.address_type) }}
+                    <div id="new-address-fields" class="checkout-form-grid">
+                        <div class="checkout-form-group">{{ form_label(form.house, 'House / unit number') }}{{ form_widget(form.house) }}{{ form_errors(form.house) }}</div>
+                        <div class="checkout-form-group">{{ form_label(form.street, 'Street') }}{{ form_widget(form.street) }}{{ form_errors(form.street) }}</div>
+                        <div class="checkout-form-group">{{ form_label(form.barangay, 'Barangay') }}{{ form_widget(form.barangay) }}{{ form_errors(form.barangay) }}</div>
+                        <div class="checkout-form-group">{{ form_label(form.city, 'City') }}{{ form_widget(form.city) }}{{ form_errors(form.city) }}</div>
+                        <div class="checkout-form-group">{{ form_label(form.province, 'Province') }}{{ form_widget(form.province) }}{{ form_errors(form.province) }}</div>
+                        <div class="checkout-form-group">{{ form_label(form.zip, 'ZIP code') }}{{ form_widget(form.zip) }}{{ form_errors(form.zip) }}</div>
+                    </div>
+
+                    <div class="checkout-section-title checkout-payment-title"><p>PAYMENT</p><h2>Select a payment method</h2></div>
+                    <div class="payment-options">
+                        {% for choice in form.payment_method %}
+                            <label class="payment-option">{{ form_widget(choice) }}<span><strong>{{ choice.vars.label }}</strong>{% if choice.vars.value == 'GCash' %}<small>Upload your GCash payment proof below.</small>{% endif %}</span></label>
+                        {% endfor %}
+                    </div>
+                    {{ form_errors(form.payment_method) }}
+                    <div id="gcash-payment" class="checkout-form-group">
+                        {{ form_label(form.payment_proof, 'GCash payment proof') }}
+                        {{ form_widget(form.payment_proof, { attr: { accept: 'image/jpeg,image/png,image/webp' } }) }}
+                        <small>JPG, PNG, or WEBP; maximum 5 MB.</small>
+                        {{ form_errors(form.payment_proof) }}
+                    </div>
+                    <button type="submit" class="checkout-place-btn">Place order</button>
+                </section>
+
+                <aside class="checkout-summary-card">
+                    <p class="checkout-summary-label">ORDER SUMMARY</p>
+                    <h2>Your Items</h2>
+                    <div class="checkout-products">
+                        {% for item in cart.items %}
+                            <div class="checkout-product">
+                                <img src="{{ asset(item.image) }}" alt="{{ item.name }}">
+                                <div><strong>{{ item.name }}</strong><small>{{ item.size }} × {{ item.qty }}</small></div>
+                                <span>₱{{ item.line_total|number_format(2) }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="checkout-totals">
+                        <div><span>Subtotal</span><span>₱{{ cart.subtotal|number_format(2) }}</span></div>
+                        <div><span>Shipping</span><span>₱{{ shippingFee|number_format(2) }}</span></div>
+                        <div class="checkout-grand-total"><strong>Total</strong><strong>₱{{ (cart.subtotal + shippingFee)|number_format(2) }}</strong></div>
+                    </div>
+                </aside>
+            </div>
+        {{ form_end(form) }}
+    </main>
+{% endblock %}

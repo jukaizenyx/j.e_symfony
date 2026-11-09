@@ -1,0 +1,17 @@
+<header class="site-nav">
+    <div class="site-nav-inner">
+        <a href="{{ path('app_home') }}#top" class="logo"><img src="{{ asset('images/je_logo.svg') }}" alt="J.E Essentials"></a>
+        <nav class="main-nav" id="mainNav">
+            <ul>
+                <li><a href="{{ path('app_home') }}#top">HOME</a></li>
+                <li><a href="{{ path('app_home') }}#about">ABOUT US</a></li>
+                <li><a href="{{ path('app_home') }}#featured">FEATURED</a></li>
+                <li><a href="{{ path('app_home') }}#app">OUR APP</a></li>
+                <li><a href="{{ path('app_home') }}#contact">CONTACT US</a></li>
+                <li class="mobile-shop"><a class="mobile-shop" href="{{ path('app_shop') }}">SHOP NOW</a></li>
+            </ul>
+        </nav>
+        <div class="cta-nav"><a href="{{ path('app_shop') }}" class="cta-btn-small">SHOP NOW</a><img src="{{ asset('images/arrow.svg') }}" alt=""></div>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+</header>

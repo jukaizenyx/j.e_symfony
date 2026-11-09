@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Order #{{ order.id }} — Admin{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('shop_css/shop.css') }}"><link rel="stylesheet" href="{{ asset('admin_css/admin.css') }}">{% endblock %}
+
+{% block body %}
+    {% include '_admin_nav.html.twig' %}
+    <main class="admin-container">
+        <p><a href="{{ path('app_admin_index') }}">&larr; Back to dashboard</a></p>
+        <div class="admin-heading"><h2>Order #{{ order.id }}</h2><p>{{ order.createdAt|date('M j, Y g:i A') }} · {{ order.status|title }}</p></div>
+        <section class="orders-section">
+            <div class="orders-section-header"><h3>Customer Information</h3></div>
+            <div class="customer-details">
+                <div class="detail-box"><span class="detail-label">Name</span><span class="detail-value">{{ order.fullName }}</span></div>
+                <div class="detail-box"><span class="detail-label">Phone</span><span class="detail-value">{{ order.phone }}</span></div>
+                <div class="detail-box"><span class="detail-label">Email</span><span class="detail-value">{{ order.email }}</span></div>
+                <div class="detail-box"><span class="detail-label">Address</span><span class="detail-value">{{ order.address }}</span></div>
+            </div>
+            <div class="orders-section-header"><h3>Products</h3></div>
+            <div class="order-items">
+                {% for item in order.items %}
+                    <div class="order-item"><div class="order-item-info"><div class="order-item-name">{{ item.name }}</div><div class="order-item-size">{% if item.size %}Size: {{ item.size }}{% endif %}</div></div><div class="order-item-qty">&times;{{ item.quantity }}</div><div class="order-item-price">₱{{ (item.price * item.quantity)|number_format(2) }}</div></div>
+                {% else %}<div class="no-items">No products found.</div>{% endfor %}
+            </div>
+            <div class="order-total-row"><span>Total</span><strong>₱{{ order.total|number_format(2) }}</strong></div>
+            <div class="detail-section">
+                <h3 class="detail-section-title">Payment</h3><div class="detail-box"><span class="detail-label">Payment Method</span><span class="detail-value">{{ order.paymentMethod }}</span></div>
+                {% if order.paymentProof %}<div class="payment-proof-box"><span class="detail-label">Proof of Payment</span><div class="payment-proof-preview"><img src="{{ asset('uploads/payment_proofs/' ~ order.paymentProof) }}" alt="Customer payment proof"></div><a href="{{ asset('uploads/payment_proofs/' ~ order.paymentProof) }}" target="_blank" rel="noopener" class="payment-proof-view">View Full Image</a></div>{% else %}<div class="payment-proof-none">No payment screenshot uploaded.</div>{% endif %}
+            </div>
+            <div class="status-update">
+                <form method="post" action="{{ path('app_admin_order_status', { id: order.id }) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('order_status_' ~ order.id) }}">
+                    <label for="order-status">Update Order Status</label>
+                    <select name="status" id="order-status">{% for status in ['pending', 'approved', 'cancelled', 'completed'] %}<option value="{{ status }}" {% if status == order.status %}selected{% endif %}>{{ status|title }}</option>{% endfor %}</select>
+                    <button type="submit" class="update-status-btn">Update Status</button>
+                </form>
+            </div>
+        </section>
+    </main>
+{% endblock %}

@@ -1,0 +1,211 @@
+.orders-empty {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-cream-light);
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--color-ink-soft);
+  font-family: var(--font-body);
+}
+.orders-empty p {
+  margin: 0 0 18px;
+  font-size: 1rem;
+}
+.orders-empty .btn-primary {
+  display: inline-block;
+  padding: 10px 22px;
+  border-radius: 6px;
+  background: var(--color-charcoal);
+  color: var(--color-cream-light);
+  text-decoration: none;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+  transition: background 0.15s ease;
+}
+.orders-empty .btn-primary:hover {
+  background: var(--color-charcoal-2);
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 8px;
+}
+
+.order-card {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-white);
+  padding: 20px 24px;
+  font-family: var(--font-body);
+}
+.order-card__head {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+@media (max-width: 600px) {
+  .order-card__head {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+}
+.order-card__id {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.order-card__label {
+  font-size: 0.72rem;
+  color: var(--color-ink-soft);
+}
+.order-card__number {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.order-card__date {
+  font-size: 0.82rem;
+  color: var(--color-ink-soft);
+  margin-right: auto;
+}
+.order-card__items {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.order-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+}
+@media (max-width: 420px) {
+  .order-card__foot {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+}
+.order-card__total {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--color-ink);
+}
+.order-card__total span {
+  font-size: 0.82rem;
+  color: var(--color-ink-soft);
+}
+.order-card__total strong {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.order-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+  font-size: 0.88rem;
+  color: var(--color-ink);
+}
+.order-item__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.order-item__qty {
+  color: var(--color-ink-soft);
+  font-size: 0.82rem;
+}
+.order-item__price {
+  font-weight: 500;
+  min-width: 90px;
+  text-align: right;
+}
+@media (max-width: 600px) {
+  .order-item {
+    grid-template-columns: 1fr auto;
+    row-gap: 2px;
+  }
+  .order-item__name {
+    grid-column: 1/-1;
+    white-space: normal;
+  }
+}
+
+.order-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+.order-status--pending {
+  background: rgba(176, 138, 78, 0.14);
+  color: var(--color-gold);
+  border: 1px solid rgba(176, 138, 78, 0.35);
+}
+.order-status--approved {
+  background: rgba(74, 107, 77, 0.12);
+  color: #4A6B4D;
+  border: 1px solid rgba(74, 107, 77, 0.3);
+}
+.order-status--completed {
+  background: rgba(58, 52, 44, 0.08);
+  color: var(--color-ink-soft);
+  border: 1px solid var(--color-border);
+}
+.order-status--cancelled {
+  background: rgba(168, 81, 74, 0.12);
+  color: #A8514A;
+  border: 1px solid rgba(168, 81, 74, 0.3);
+}
+
+.btn-cancel-order {
+  flex-shrink: 0;
+  padding: 9px 18px;
+  border-radius: 6px;
+  border: 1px solid #A8514A;
+  background: transparent;
+  color: #A8514A;
+  font-family: var(--font-body);
+  font-size: 0.84rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+.btn-cancel-order:hover:not(:disabled) {
+  background: #A8514A;
+  color: var(--color-white);
+}
+.btn-cancel-order:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  border-color: var(--color-border);
+  color: var(--color-ink-soft);
+}
+@media (max-width: 420px) {
+  .btn-cancel-order {
+    width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .order-card {
+    padding: 18px;
+  }
+}/*# sourceMappingURL=dashboard.css.map */

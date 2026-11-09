@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Profile — J.E Essentials{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('shop_css/shop.css') }}"><link rel="stylesheet" href="{{ asset('profile_css/profile.css') }}">{% endblock %}
+
+{% block body %}
+    {% include '_nav.html.twig' %}
+    <main class="profile-page">
+        <a href="{{ path('app_shop') }}" class="profile-back">&larr; Go back to shop</a>
+        <section class="profile-header">
+            <div><p class="profile-eyebrow">MY ACCOUNT</p><h1>Profile</h1><p class="profile-username">@{{ app.user.username }}</p></div>
+        </section>
+        {% for message in app.flashes('success') %}<div class="profile-message">{{ message }}</div>{% endfor %}
+        <div class="profile-dashboard">
+            <aside class="profile-sidebar">
+                <p class="profile-sidebar-title">My Account</p>
+                <a href="{{ path('app_account_profile') }}" class="profile-menu-link active">Personal Information</a>
+                <a href="{{ path('app_account_orders') }}" class="profile-menu-link">My Orders</a>
+                <a href="{{ path('app_account_settings') }}" class="profile-menu-link">Settings</a>
+                <a href="{{ path('app_logout') }}" class="profile-menu-link profile-logout">Logout</a>
+            </aside>
+            <section class="profile-content">
+                <div class="profile-card">
+                    <p class="profile-section-label">PERSONAL INFORMATION</p>
+                    <h2>Your Details</h2>
+                    <p class="profile-description">Update your personal information below.</p>
+                    {{ form_start(form) }}
+                        {{ form_errors(form) }}
+                        <div class="profile-form-grid">
+                            <div class="profile-form-group">{{ form_label(form.firstName, 'First Name') }}{{ form_widget(form.firstName) }}{{ form_errors(form.firstName) }}</div>
+                            <div class="profile-form-group">{{ form_label(form.middleName, 'Middle Name') }}{{ form_widget(form.middleName) }}{{ form_errors(form.middleName) }}</div>
+                            <div class="profile-form-group">{{ form_label(form.lastName, 'Last Name') }}{{ form_widget(form.lastName) }}{{ form_errors(form.lastName) }}</div>
+                            <div class="profile-form-group">{{ form_label(form.email, 'Email Address') }}{{ form_widget(form.email) }}{{ form_errors(form.email) }}</div>
+                            <div class="profile-form-group">{{ form_label(form.phone, 'Phone Number') }}{{ form_widget(form.phone) }}{{ form_errors(form.phone) }}</div>
+                            <div class="profile-form-group profile-full-width">{{ form_label(form.address, 'Address') }}{{ form_widget(form.address, { attr: { rows: 3 } }) }}{{ form_errors(form.address) }}</div>
+                        </div>
+                        <button type="submit" class="profile-save-btn">Save Changes</button>
+                    {{ form_end(form) }}
+                </div>
+                <div class="profile-card">
+                    <p class="profile-section-label">ACCOUNT INFORMATION</p><h2>Account Details</h2>
+                    <div class="account-details">
+                        <div class="account-detail"><span>Username</span><strong>{{ app.user.username }}</strong></div>
+                        <div class="account-detail"><span>Account Created</span><strong>{{ app.user.createdAt|date('M j, Y') }}</strong></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+{% endblock %}

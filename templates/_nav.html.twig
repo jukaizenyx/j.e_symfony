@@ -1,0 +1,96 @@
+{% set cartCount = 0 %}
+{% for entry in app.session.get('cart', []) %}
+    {% set cartCount = cartCount + entry.qty %}
+{% endfor %}
+<header class="site-nav">
+    <div class="site-nav-inner">
+        <a href="{{ path('app_home') }}" class="logo" aria-label="J.E Essentials home">
+            <img src="{{ asset('images/je_logo.svg') }}" alt="J.E Essentials">
+        </a>
+        <nav class="main-nav" id="mainNav">
+            <ul>
+                <li><a href="{{ path('app_home') }}#top">HOME</a></li>
+                <li><a href="{{ path('app_home') }}#about">ABOUT US</a></li>
+                <li><a href="{{ path('app_home') }}#featured">FEATURED</a></li>
+                <li><a href="{{ path('app_home') }}#app">OUR APP</a></li>
+                <li><a href="{{ path('app_home') }}#contact">CONTACT US</a></li>
+                <li class="mobile-shop"><a class="mobile-shop" href="{{ path('app_shop') }}">SHOP NOW</a></li>
+            </ul>
+        </nav>
+        <div class="shop-cart-nav">
+            <a href="{{ path('app_cart') }}" class="cart-btn" id="cartTrigger" aria-label="View cart">
+                <img src="{{ asset('images/cart-plus-svgrepo-com.svg') }}" alt="">
+                <span class="cart-count" id="cartCount">{{ cartCount }}</span>
+            </a>
+            {% if app.user %}
+                {% set userNotifications = app.user.notifications|slice(0, 20) %}
+                {% set unreadNotifications = userNotifications|filter(notification => not notification.isRead)|length %}
+                <div class="notification-nav" id="notificationNav">
+                    <button type="button" class="notification-btn" id="notificationTrigger" aria-label="Notifications" aria-expanded="false">
+                        <span class="notification-icon">🔔</span>
+                        {% if unreadNotifications > 0 %}<span class="notification-count">{{ unreadNotifications }}</span>{% endif %}
+                    </button>
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="notification-header"><strong>Notifications</strong></div>
+                        <div class="notification-list">
+                            {% for notification in userNotifications %}
+                                <a href="{{ path('app_account_orders') }}" class="notification-item{{ notification.isRead ? '' : ' unread' }}">
+                                    <span class="notification-message">{{ notification.message }}</span>
+                                    <small>{{ notification.createdAt|date('M j, Y g:i A') }}</small>
+                                </a>
+                            {% else %}
+                                <div class="notification-empty">No notifications yet.</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-nav" id="profileNav">
+                    <button class="profile-btn" id="profileTrigger" aria-haspopup="true" aria-expanded="false">
+                        <span class="profile-avatar">{{ app.user.username|first|upper }}</span>
+                        <span class="profile-name">{{ app.user.username }}</span>
+                    </button>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <a href="{{ path('app_account_orders') }}">Orders</a>
+                        <a href="{{ path('app_account_profile') }}">Profile</a>
+                        <a href="{{ path('app_account_settings') }}">Settings</a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <hr>
+                            <a href="{{ path('app_admin_index') }}">Admin Dashboard</a>
+                            <a href="{{ path('app_admin_product_index') }}">Manage Products</a>
+                        {% endif %}
+                        <hr>
+                        <a href="{{ path('app_logout') }}">Log Out</a>
+                    </div>
+                </div>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="account-link">LOG IN</a>
+            {% endif %}
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<div class="modal-overlay" id="cartModalOverlay">
+    <div class="modal cart-modal" role="dialog" aria-modal="true" aria-labelledby="cartModalTitle">
+        <button type="button" class="modal-close" id="cartModalClose" aria-label="Close">&times;</button>
+        <h2 id="cartModalTitle">Your Cart</h2>
+        <div class="cart-items" id="cartItems">
+            <p class="cart-empty" id="cartEmptyMsg">Your cart is empty.</p>
+        </div>
+        <div class="cart-summary">
+            <div class="cart-subtotal-row"><span>Subtotal</span><span id="cartSubtotal">₱0</span></div>
+            <p class="checkout-message" id="checkoutMessage"></p>
+            <button type="button" class="btn-primary cart-checkout-btn" id="cartCheckoutBtn">Checkout</button>
+        </div>
+    </div>
+</div>
+<div class="cart-toast" id="cartToast" role="status">Added to cart</div>
+
+{% for message in app.flashes('success') %}
+    <p class="notice notice-success" role="status">{{ message }}</p>
+{% endfor %}
+{% for message in app.flashes('error') %}
+    <p class="notice notice-error" role="alert">{{ message }}</p>
+{% endfor %}

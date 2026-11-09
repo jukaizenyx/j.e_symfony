@@ -1,0 +1,240 @@
+// ---------- Orders tab (dashboard.php) ----------
+// Relies on the :root custom properties already defined in shop.scss
+// (--color-cream, --color-gold, --color-border, --font-heading, --font-body, etc).
+// @import this file into shop.scss, or compile it alongside shop.css and
+// link it after shop.css in dashboard.php.
+
+$bp-900: 900px;
+$bp-600: 600px;
+$bp-420: 420px;
+
+.orders-empty {
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: var(--color-cream-light);
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--color-ink-soft);
+    font-family: var(--font-body);
+
+    p {
+        margin: 0 0 18px;
+        font-size: 1rem;
+    }
+
+    .btn-primary {
+        display: inline-block;
+        padding: 10px 22px;
+        border-radius: 6px;
+        background: var(--color-charcoal);
+        color: var(--color-cream-light);
+        text-decoration: none;
+        font-size: 0.9rem;
+        letter-spacing: 0.01em;
+        transition: background 0.15s ease;
+
+        &:hover {
+            background: var(--color-charcoal-2);
+        }
+    }
+}
+
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 8px;
+}
+
+.order-card {
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: var(--color-white);
+    padding: 20px 24px;
+    font-family: var(--font-body);
+
+    &__head {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding-bottom: 14px;
+        margin-bottom: 14px;
+        border-bottom: 1px solid var(--color-border);
+
+        @media (max-width: $bp-600) {
+            flex-wrap: wrap;
+            row-gap: 8px;
+        }
+    }
+
+    &__id {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+    }
+
+    &__label {
+        font-size: 0.72rem;
+        color: var(--color-ink-soft);
+    }
+
+    &__number {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--color-ink);
+    }
+
+    &__date {
+        font-size: 0.82rem;
+        color: var(--color-ink-soft);
+        margin-right: auto;
+    }
+
+    &__items {
+        list-style: none;
+        margin: 0 0 14px;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    &__foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding-top: 14px;
+        border-top: 1px solid var(--color-border);
+
+        @media (max-width: $bp-420) {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+        }
+    }
+
+    &__total {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        color: var(--color-ink);
+
+        span {
+            font-size: 0.82rem;
+            color: var(--color-ink-soft);
+        }
+
+        strong {
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+    }
+}
+
+.order-item {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 14px;
+    align-items: center;
+    font-size: 0.88rem;
+    color: var(--color-ink);
+
+    &__name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__qty {
+        color: var(--color-ink-soft);
+        font-size: 0.82rem;
+    }
+
+    &__price {
+        font-weight: 500;
+        min-width: 90px;
+        text-align: right;
+    }
+
+    @media (max-width: $bp-600) {
+        grid-template-columns: 1fr auto;
+        row-gap: 2px;
+
+        &__name {
+            grid-column: 1 / -1;
+            white-space: normal;
+        }
+    }
+}
+
+.order-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+
+    &--pending {
+        background: rgba(#B08A4E, 0.14);
+        color: var(--color-gold);
+        border: 1px solid rgba(#B08A4E, 0.35);
+    }
+
+    &--approved {
+        background: rgba(#4A6B4D, 0.12);
+        color: #4A6B4D;
+        border: 1px solid rgba(#4A6B4D, 0.3);
+    }
+
+    &--completed {
+        background: rgba(#3A342C, 0.08);
+        color: var(--color-ink-soft);
+        border: 1px solid var(--color-border);
+    }
+
+    &--cancelled {
+        background: rgba(#A8514A, 0.12);
+        color: #A8514A;
+        border: 1px solid rgba(#A8514A, 0.3);
+    }
+}
+
+.btn-cancel-order {
+    flex-shrink: 0;
+    padding: 9px 18px;
+    border-radius: 6px;
+    border: 1px solid #A8514A;
+    background: transparent;
+    color: #A8514A;
+    font-family: var(--font-body);
+    font-size: 0.84rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+
+    &:hover:not(:disabled) {
+        background: #A8514A;
+        color: var(--color-white);
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.45;
+        border-color: var(--color-border);
+        color: var(--color-ink-soft);
+    }
+
+    @media (max-width: $bp-420) {
+        width: 100%;
+    }
+}
+
+@media (max-width: $bp-900) {
+    .order-card {
+        padding: 18px;
+    }
+}
