@@ -1,4 +1,11 @@
 (() => {
+    let pageController;
+    const initializePage = () => {
+        pageController?.abort();
+        pageController = new AbortController();
+        const listen = (target, eventName, handler, options = {}) => {
+            target.addEventListener(eventName, handler, { ...options, signal: pageController.signal });
+        };
     const body = document.body;
     const money = value => `₱${Number(value || 0).toLocaleString('en-PH', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
     const productsNode = document.getElementById('je-products');
@@ -15,12 +22,12 @@
     const navToggle = document.getElementById('navToggle');
     const mainNav = document.getElementById('mainNav');
     if (navToggle && mainNav) {
-        navToggle.addEventListener('click', () => {
+        listen(navToggle, 'click', () => {
             const open = mainNav.classList.toggle('is-open');
             navToggle.classList.toggle('is-open', open);
             navToggle.setAttribute('aria-expanded', String(open));
         });
-        mainNav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+        mainNav.querySelectorAll('a').forEach(link => listen(link, 'click', () => {
             mainNav.classList.remove('is-open');
             navToggle.classList.remove('is-open');
             navToggle.setAttribute('aria-expanded', 'false');
@@ -32,7 +39,7 @@
     const notificationTrigger = document.getElementById('notificationTrigger');
     const notificationDropdown = document.getElementById('notificationDropdown');
     if (profileTrigger && profileDropdown) {
-        profileTrigger.addEventListener('click', event => {
+        listen(profileTrigger, 'click', event => {
             event.stopPropagation();
             const open = profileDropdown.classList.toggle('is-open');
             profileTrigger.setAttribute('aria-expanded', String(open));
@@ -44,7 +51,7 @@
     }
 
     if (notificationTrigger && notificationDropdown) {
-        notificationTrigger.addEventListener('click', event => {
+        listen(notificationTrigger, 'click', event => {
             event.stopPropagation();
             const open = notificationDropdown.classList.toggle('is-open');
             notificationTrigger.setAttribute('aria-expanded', String(open));
@@ -55,7 +62,7 @@
         });
     }
 
-    document.addEventListener('click', event => {
+    listen(document, 'click', event => {
         const target = event.target;
         if (!(target instanceof Element)) return;
         if (!target.closest('#profileNav')) {
@@ -162,9 +169,9 @@
                     showCartError(error.message);
                 }
             };
-            minus.addEventListener('click', () => update(item.qty - 1));
-            plus.addEventListener('click', () => update(item.qty + 1));
-            remove.addEventListener('click', async () => {
+            listen(minus, 'click', () => update(item.qty - 1));
+            listen(plus, 'click', () => update(item.qty + 1));
+            listen(remove, 'click', async () => {
                 try {
                     renderCart(await cartRequest('remove', { product_id: item.product_id, size: item.size, qty: 1 }));
                 } catch (error) {
@@ -200,11 +207,13 @@
         }
     }
 
-    document.getElementById('cartModalClose')?.addEventListener('click', closeCart);
-    cartOverlay?.addEventListener('click', event => {
+    const cartClose = document.getElementById('cartModalClose');
+    if (cartClose) listen(cartClose, 'click', closeCart);
+    if (cartOverlay) listen(cartOverlay, 'click', event => {
         if (event.target === cartOverlay) closeCart();
     });
-    document.getElementById('cartTrigger')?.addEventListener('click', async event => {
+    const cartTrigger = document.getElementById('cartTrigger');
+    if (cartTrigger) listen(cartTrigger, 'click', async event => {
         event.preventDefault();
         profileDropdown?.classList.remove('is-open');
         profileTrigger?.setAttribute('aria-expanded', 'false');
@@ -218,7 +227,8 @@
             showCartError(error.message);
         }
     });
-    document.getElementById('cartCheckoutBtn')?.addEventListener('click', () => {
+    const cartCheckoutButton = document.getElementById('cartCheckoutBtn');
+    if (cartCheckoutButton) listen(cartCheckoutButton, 'click', () => {
         if (!currentCart.items.length) {
             showCartError('Please add at least one product to your cart before checking out.');
             return;
@@ -264,7 +274,7 @@
                 button.type = 'button';
                 button.className = `size-chip${size === activeSize ? ' is-selected' : ''}`;
                 button.textContent = size;
-                button.addEventListener('click', () => {
+                listen(button, 'click', () => {
                     activeSize = size;
                     sizeOptions.querySelectorAll('.size-chip').forEach(option => option.classList.remove('is-selected'));
                     button.classList.add('is-selected');
@@ -278,22 +288,25 @@
         }
 
         document.querySelectorAll('.btn-add[data-product-id]').forEach(button => {
-            button.addEventListener('click', event => {
+            listen(button, 'click', event => {
                 event.preventDefault();
                 openProduct(button.dataset.productId);
             });
         });
-        document.getElementById('productModalClose')?.addEventListener('click', closeProduct);
-        productOverlay.addEventListener('click', event => {
+        const productModalClose = document.getElementById('productModalClose');
+        if (productModalClose) listen(productModalClose, 'click', closeProduct);
+        listen(productOverlay, 'click', event => {
             if (event.target === productOverlay) closeProduct();
         });
-        document.getElementById('qtyMinus')?.addEventListener('click', () => {
+        const qtyMinus = document.getElementById('qtyMinus');
+        if (qtyMinus) listen(qtyMinus, 'click', () => {
             qtyInput.value = String(Math.max(1, Number(qtyInput.value || 1) - 1));
         });
-        document.getElementById('qtyPlus')?.addEventListener('click', () => {
+        const qtyPlus = document.getElementById('qtyPlus');
+        if (qtyPlus) listen(qtyPlus, 'click', () => {
             qtyInput.value = String(Math.min(20, Number(qtyInput.value || 1) + 1));
         });
-        qtyInput?.addEventListener('change', () => {
+        if (qtyInput) listen(qtyInput, 'change', () => {
             qtyInput.value = String(Math.max(1, Math.min(20, Number(qtyInput.value || 1))));
         });
 
@@ -304,19 +317,19 @@
                 zoomPane.style.backgroundImage = `url("${image.src}")`;
                 zoomPane.style.backgroundSize = '220%';
             };
-            zoomFrame.addEventListener('mouseenter', () => {
+            listen(zoomFrame, 'mouseenter', () => {
                 setupZoom();
                 zoomPane.style.opacity = '1';
             });
-            zoomFrame.addEventListener('mouseleave', () => { zoomPane.style.opacity = '0'; });
-            zoomFrame.addEventListener('mousemove', event => {
+            listen(zoomFrame, 'mouseleave', () => { zoomPane.style.opacity = '0'; });
+            listen(zoomFrame, 'mousemove', event => {
                 const rect = zoomFrame.getBoundingClientRect();
                 const x = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
                 const y = Math.min(1, Math.max(0, (event.clientY - rect.top) / rect.height));
                 zoomPane.style.backgroundPosition = `${x * 100}% ${y * 100}%`;
             });
         }
-        addButton?.addEventListener('click', async () => {
+        if (addButton) listen(addButton, 'click', async () => {
             if (!activeProduct || !activeSize) return;
             addButton.disabled = true;
             addError.textContent = '';
@@ -348,7 +361,7 @@
             newAddressFields.style.display = useNewAddress ? 'grid' : 'none';
             newAddressFields.querySelectorAll('input').forEach(input => { input.required = useNewAddress; });
         };
-        addressOptions.forEach(option => option.addEventListener('change', updateAddressFields));
+        addressOptions.forEach(option => listen(option, 'change', updateAddressFields));
         updateAddressFields();
     }
 
@@ -359,12 +372,12 @@
             const selected = document.querySelector('input[name="payment_method"]:checked, input[name$="[payment_method]"]:checked');
             gcashPayment.style.display = selected?.value === 'GCash' ? 'block' : 'none';
         };
-        paymentOptions.forEach(option => option.addEventListener('change', updatePaymentMethod));
+        paymentOptions.forEach(option => listen(option, 'change', updatePaymentMethod));
         updatePaymentMethod();
     }
 
     document.querySelectorAll('.password-toggle[data-target]').forEach(button => {
-        button.addEventListener('click', () => {
+        listen(button, 'click', () => {
             const input = document.getElementById(button.dataset.target);
             if (!input) return;
             input.type = input.type === 'password' ? 'text' : 'password';
@@ -373,7 +386,7 @@
         });
     });
 
-    document.addEventListener('keydown', event => {
+    listen(document, 'keydown', event => {
         if (event.key === 'Escape') {
             closeCart();
             productOverlay?.classList.remove('is-open');
@@ -384,4 +397,12 @@
             body.classList.remove('modal-open');
         }
     });
+    };
+
+    document.addEventListener('turbo:load', initializePage);
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializePage, { once: true });
+    } else {
+        initializePage();
+    }
 })();

@@ -6,7 +6,9 @@
 {% block body %}
     {% include '_admin_nav.html.twig' %}
     <main class="admin-container">
-        <a class="page-back-link" href="{{ path('app_admin_index') }}">&larr; Back to dashboard</a>
+        <a class="page-back-link" href="{{ path(backRoute|default('app_admin_index')) }}">&larr; Back to orders</a>
+        {% for message in app.flashes('success') %}<div class="update-message" role="status">{{ message }}</div>{% endfor %}
+        {% for message in app.flashes('error') %}<div class="update-message error" role="alert">{{ message }}</div>{% endfor %}
         <div class="admin-heading"><h2>Order #{{ order.id }}</h2><p>{{ order.createdAt|date('M j, Y g:i A') }} · {{ order.status|title }}</p></div>
         <section class="orders-section">
             <div class="orders-section-header"><h3>Customer Information</h3></div>
@@ -28,7 +30,7 @@
                 {% if order.paymentProof %}<div class="payment-proof-box"><span class="detail-label">Proof of Payment</span><div class="payment-proof-preview"><img src="{{ asset('uploads/payment_proofs/' ~ order.paymentProof) }}" alt="Customer payment proof"></div><a href="{{ asset('uploads/payment_proofs/' ~ order.paymentProof) }}" target="_blank" rel="noopener" class="payment-proof-view">View Full Image</a></div>{% else %}<div class="payment-proof-none">No payment screenshot uploaded.</div>{% endif %}
             </div>
             <div class="status-update">
-                <form method="post" action="{{ path('app_admin_order_status', { id: order.id }) }}">
+                <form method="post" action="{{ path(statusRoute|default('app_admin_order_status'), { id: order.id }) }}">
                     <input type="hidden" name="_token" value="{{ csrf_token('order_status_' ~ order.id) }}">
                     <label for="order-status">Update Order Status</label>
                     <select name="status" id="order-status">{% for status in ['pending', 'approved', 'cancelled', 'completed'] %}<option value="{{ status }}" {% if status == order.status %}selected{% endif %}>{{ status|title }}</option>{% endfor %}</select>

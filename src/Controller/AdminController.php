@@ -61,7 +61,11 @@ class AdminController extends AbstractController
     #[Route('/orders/{id}', name: 'order_show', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function showOrder(Order $order): Response
     {
-        return $this->render('admin/order_show.html.twig', ['order' => $order]);
+        return $this->render('admin/order_show.html.twig', [
+            'order' => $order,
+            'backRoute' => 'app_admin_index',
+            'statusRoute' => 'app_admin_order_status',
+        ]);
     }
 
     #[Route('/orders/{id}/status', name: 'order_status', requirements: ['id' => '\d+'], methods: ['POST'])]

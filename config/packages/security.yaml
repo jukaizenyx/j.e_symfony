@@ -44,7 +44,7 @@ security:
     # Note: Only the *first* matching rule is applied
     access_control:
         - { path: ^/admin, allow_if: "is_granted('ROLE_ADMIN') and user != null and user.isActive()" }
-        - { path: ^/staff/products, allow_if: "is_granted('ROLE_STAFF') and user != null and user.isActive()" }
+        - { path: ^/staff, allow_if: "is_granted('ROLE_STAFF') and user != null and user.isActive()" }
         - { path: ^/account, allow_if: "is_granted('ROLE_USER') and user != null and user.isActive()" }
         - { path: ^/checkout, allow_if: "is_granted('ROLE_USER') and user != null and user.isActive()" }
 

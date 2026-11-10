@@ -8,6 +8,7 @@
                     <li><a href="{{ path('app_admin_product_index') }}">PRODUCTS</a></li>
                     <li><a href="{{ path('app_admin_user_index') }}">USERS</a></li>
                 {% elseif is_granted('ROLE_STAFF') %}
+                    <li><a href="{{ path('app_staff_order_index') }}">ORDERS</a></li>
                     <li><a href="{{ path('app_staff_product_index') }}">MY PRODUCTS</a></li>
                 {% endif %}
                 <li><a href="{{ path('app_logout') }}">LOG OUT</a></li>
