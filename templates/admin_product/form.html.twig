@@ -6,17 +6,28 @@
 {% block body %}
     {% include '_admin_nav.html.twig' %}
     <main class="products-page">
-        <p><a href="{{ path('app_admin_product_index') }}">&larr; Back to products</a></p>
-        <h1>{{ title }}</h1>
+        <a class="page-back-link" href="{{ path(backRoute|default('app_admin_product_index')) }}">&larr; Back to products</a>
+        <header class="page-title-block"><p class="page-eyebrow">J.E ESSENTIALS · CATALOG</p><h1>{{ title }}</h1><p class="page-intro">Add the product details and size-specific prices customers can choose from.</p></header>
         {% for message in app.flashes('error') %}<div class="products-alert error" role="alert">{{ message }}</div>{% endfor %}
         <div class="product-form">
             {{ form_start(form) }}
                 {{ form_errors(form) }}
                 <div class="form-group">{{ form_label(form.name, 'Product Name') }}{{ form_widget(form.name) }}{{ form_errors(form.name) }}</div>
                 <div class="form-group">{{ form_label(form.description, 'Description') }}{{ form_widget(form.description) }}{{ form_errors(form.description) }}</div>
-                <div class="form-group">{{ form_label(form.image, 'Image Path') }}{{ form_widget(form.image, { attr: { placeholder: 'images/product.jpg' } }) }}{{ form_errors(form.image) }}</div>
+                <div class="form-group">
+                    {{ form_label(form.imageFile, 'Product Image') }}
+                    {{ form_widget(form.imageFile, { attr: { accept: 'image/jpeg,image/png,image/webp,image/gif,image/avif,image/bmp' } }) }}
+                    <p class="form-help">JPEG, PNG, WebP, GIF, AVIF, or BMP. Maximum file size: 10 MB.{% if currentImage is defined %} Leave this empty to keep the current image.{% endif %}</p>
+                    {{ form_errors(form.imageFile) }}
+                    {% if currentImage is defined and currentImage %}
+                        <div class="current-product-image">
+                            <span>Current image</span>
+                            <img src="{{ asset(currentImage) }}" alt="Current {{ form.vars.data.name }} image">
+                        </div>
+                    {% endif %}
+                </div>
                 <div class="sizes-section">
-                    <h2>Sizes &amp; Prices</h2>{{ form_errors(form.sizes) }}
+                    <h2>Sizes &amp; Prices</h2><p class="form-help">Add each available size and its price. These options appear on the product page.</p>{{ form_errors(form.sizes) }}
                     <div id="sizeContainer" data-prototype="{{ form_widget(form.sizes.vars.prototype)|e('html_attr') }}">
                         {% for sizeForm in form.sizes %}
                             <div class="size-row">{{ form_widget(sizeForm.size, { attr: { placeholder: 'Size', required: true } }) }}{{ form_widget(sizeForm.price, { attr: { placeholder: 'Price', min: 0, step: '0.01', required: true } }) }}<button type="button" class="remove-size">Remove</button></div>
@@ -25,7 +36,7 @@
                     <button type="button" class="add-size" id="addSize">+ Add Size</button>
                 </div>
                 <button type="submit" class="product-submit">Save Product</button>
-                <a href="{{ path('app_admin_product_index') }}" class="cancel-edit">Cancel</a>
+                <a href="{{ path(backRoute|default('app_admin_product_index')) }}" class="cancel-edit">Cancel</a>
             {{ form_end(form) }}
         </div>
     </main>

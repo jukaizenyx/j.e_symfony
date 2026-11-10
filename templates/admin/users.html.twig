@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Manage Users — J.E Essentials{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('shop_css/shop.css') }}"><link rel="stylesheet" href="{{ asset('admin_css/admin.css') }}"><link rel="stylesheet" href="{{ asset('admin_css/products.css') }}">{% endblock %}
+
+{% block body %}
+    {% include '_admin_nav.html.twig' %}
+    <main class="products-page">
+        <div class="products-header">
+            <div><p class="page-eyebrow">J.E ESSENTIALS · ACCESS CONTROL</p><h1>User Accounts</h1><p class="page-intro">Create and manage customer, staff, and administrator accounts.</p></div>
+            <a class="btn-primary" href="{{ path('app_admin_user_new') }}">Create User</a>
+        </div>
+        {% for message in app.flashes('success') %}<div class="products-alert success" role="status">{{ message }}</div>{% endfor %}
+        {% for message in app.flashes('error') %}<div class="products-alert error" role="alert">{{ message }}</div>{% endfor %}
+        <form method="get" class="user-filters">
+            <label>Search <input type="search" name="q" value="{{ filters.q }}" placeholder="Name, username, or email"></label>
+            <label>Role
+                <select name="role">
+                    <option value="">All roles</option>
+                    <option value="customer" {{ filters.role == 'customer' ? 'selected' : '' }}>Customer</option>
+                    <option value="staff" {{ filters.role == 'staff' ? 'selected' : '' }}>Staff</option>
+                    <option value="admin" {{ filters.role == 'admin' ? 'selected' : '' }}>Administrator</option>
+                </select>
+            </label>
+            <label>Status
+                <select name="status">
+                    <option value="">All statuses</option>
+                    <option value="active" {{ filters.status == 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="disabled" {{ filters.status == 'disabled' ? 'selected' : '' }}>Disabled</option>
+                </select>
+            </label>
+            <button type="submit" class="edit-btn">Filter</button>
+            <a href="{{ path('app_admin_user_index') }}" class="cancel-edit">Clear</a>
+        </form>
+        <div class="products-table-wrapper">
+            <table class="products-table">
+                <thead><tr><th>Username / Email</th><th>Name</th><th>Role</th><th>Status</th><th>Date Created</th><th>Actions</th></tr></thead>
+                <tbody>
+                    {% for account in users %}
+                        <tr>
+                            <td><strong>{{ account.username }}</strong><br><span>{{ account.email }}</span></td>
+                            <td>{{ account.firstName }} {{ account.lastName }}</td>
+                            <td>{{ account.isAdmin ? 'Administrator' : (account.isStaff ? 'Staff' : 'Customer') }}</td>
+                            <td>{{ account.isActive ? 'Active' : 'Disabled' }}</td>
+                            <td>{{ account.createdAt|date('M j, Y') }}</td>
+                            <td><div class="action-buttons">
+                                <a class="edit-btn" href="{{ path('app_admin_user_edit', { id: account.id }) }}">Edit</a>
+                                {% if app.user.id != account.id %}
+                                    <form method="post" action="{{ path('app_admin_user_delete', { id: account.id }) }}" onsubmit="return confirm('Permanently delete this account? Accounts with order history can only be disabled.');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_user_' ~ account.id) }}">
+                                        <button type="submit" class="delete-btn">Delete</button>
+                                    </form>
+                                {% endif %}
+                            </div></td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="6">No user accounts match these filters.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+{% endblock %}

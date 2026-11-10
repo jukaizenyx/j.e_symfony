@@ -11,6 +11,7 @@
             <p class="profile-eyebrow">MY ACCOUNT</p><h1>Settings</h1>
             <p>Manage your account and shopping preferences.</p>
         </section>
+        {% for message in app.flashes('success') %}<div class="profile-message" role="status">{{ message }}</div>{% endfor %}
         <div class="settings-container">
             <div class="settings-card">
                 <p class="profile-section-label">ACCOUNT</p><h2>Account Settings</h2>
@@ -18,7 +19,7 @@
             </div>
             <div class="settings-card">
                 <p class="profile-section-label">SECURITY</p><h2>Password &amp; Security</h2>
-                <div class="settings-option" id="security"><div><strong>Change Password</strong><p>Password changes are not available in this Symfony migration yet.</p></div><span aria-hidden="true">&rarr;</span></div>
+                <a class="settings-option" id="security" href="{{ path('app_account_password') }}"><div><strong>Change Password</strong><p>Update your password using your current password.</p></div><span aria-hidden="true">&rarr;</span></a>
             </div>
             <div class="settings-card">
                 <p class="profile-section-label">SHOPPING</p><h2>Shopping</h2>

@@ -6,11 +6,12 @@
         <meta name="theme-color" content="#f7f5f0">
         <title>{% block title %}J.E Eullaran Essentials{% endblock %}</title>
         <link rel="icon" href="{{ asset('images/je_logo.svg') }}" type="image/svg+xml">
+        <script src="{{ asset('javascript.js') }}" defer></script>
         {% block stylesheets %}{% endblock %}
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
-        <script src="{{ asset('javascript.js') }}" defer></script>
+        <link rel="stylesheet" href="{{ asset('app_css/pages.css') }}">
     </head>
     <body
         data-cart-action-url="{{ path('app_cart_action', { action: 'add' })|replace({'/add': ''}) }}"

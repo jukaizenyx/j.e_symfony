@@ -1,0 +1,15 @@
+<div class="modal-overlay" id="cartModalOverlay">
+    <div class="modal cart-modal" role="dialog" aria-modal="true" aria-labelledby="cartModalTitle">
+        <button type="button" class="modal-close" id="cartModalClose" aria-label="Close">&times;</button>
+        <h2 id="cartModalTitle">Your Cart</h2>
+        <div class="cart-items" id="cartItems">
+            <p class="cart-empty" id="cartEmptyMsg">Your cart is empty.</p>
+        </div>
+        <div class="cart-summary">
+            <div class="cart-subtotal-row"><span>Subtotal</span><span id="cartSubtotal">₱0</span></div>
+            <p class="checkout-message" id="checkoutMessage"></p>
+            <button type="button" class="btn-primary cart-checkout-btn" id="cartCheckoutBtn">Checkout</button>
+        </div>
+    </div>
+</div>
+<div class="cart-toast" id="cartToast" role="status">Added to cart</div>

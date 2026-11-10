@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Order;
 use App\Entity\User;
 use App\Form\ProfileType;
+use App\Form\ChangePasswordType;
 use App\Repository\NotificationRepository;
 use App\Repository\OrderRepository;
 use App\Repository\UserRepository;
@@ -15,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[IsGranted('ROLE_USER')]
 #[Route('/account', name: 'app_account_')]
@@ -53,6 +55,38 @@ class AccountController extends AbstractController
     public function settings(): Response
     {
         return $this->render('account/settings.html.twig');
+    }
+
+    #[Route('/password', name: 'password', methods: ['GET', 'POST'])]
+    public function changePassword(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $passwordHasher,
+    ): Response {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $form = $this->createForm(ChangePasswordType::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $currentPassword = (string) $form->get('currentPassword')->getData();
+            $newPassword = (string) $form->get('newPassword')->getData();
+            if (!$passwordHasher->isPasswordValid($user, $currentPassword)) {
+                $form->get('currentPassword')->addError(new FormError('The current password is incorrect.'));
+            } elseif ($newPassword !== $form->get('confirmPassword')->getData()) {
+                $form->get('confirmPassword')->addError(new FormError('The new passwords do not match.'));
+            } else {
+                $user->setPassword($passwordHasher->hashPassword($user, $newPassword));
+                $entityManager->flush();
+                $this->addFlash('success', 'Your password has been changed.');
+
+                return $this->redirectToRoute('app_account_settings');
+            }
+        }
+
+        return $this->render('account/change_password.html.twig', ['form' => $form->createView()]);
     }
 
     #[Route('/orders', name: 'orders', methods: ['GET'])]

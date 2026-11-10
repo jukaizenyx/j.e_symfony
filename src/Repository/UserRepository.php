@@ -26,4 +26,44 @@ class UserRepository extends ServiceEntityRepository implements UserLoaderInterf
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    /**
+     * @return list<User>
+     */
+    public function findForManagement(string $search = '', string $role = '', string $status = ''): array
+    {
+        $query = $this->createQueryBuilder('user')->orderBy('user.id', 'DESC');
+
+        if (trim($search) !== '') {
+            $query->andWhere('user.username LIKE :search OR user.email LIKE :search OR user.firstName LIKE :search OR user.lastName LIKE :search')
+                ->setParameter('search', '%'.trim($search).'%');
+        }
+        if ($role === 'admin') {
+            $query->andWhere('user.isAdmin = true');
+        } elseif ($role === 'staff') {
+            $query->andWhere('user.isStaff = true AND user.isAdmin = false');
+        } elseif ($role === 'customer') {
+            $query->andWhere('user.isAdmin = false AND user.isStaff = false');
+        }
+        if ($status === 'active') {
+            $query->andWhere('user.isActive = true');
+        } elseif ($status === 'disabled') {
+            $query->andWhere('user.isActive = false');
+        }
+
+        return $query->getQuery()->getResult();
+    }
+
+    public function countActiveAdministrators(?User $exclude = null): int
+    {
+        $query = $this->createQueryBuilder('user')
+            ->select('COUNT(user.id)')
+            ->where('user.isAdmin = true')
+            ->andWhere('user.isActive = true');
+        if ($exclude !== null) {
+            $query->andWhere('user.id != :exclude')->setParameter('exclude', $exclude->getId());
+        }
+
+        return (int) $query->getQuery()->getSingleScalarResult();
+    }
 }

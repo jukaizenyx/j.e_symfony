@@ -6,16 +6,27 @@
 {% block body %}
     {% include '_admin_nav.html.twig' %}
     <main class="admin-container">
-        <div class="admin-heading"><h2>Admin Dashboard</h2><p>Manage customer orders, product listings, and inquiries.</p><p><a href="{{ path('app_admin_product_index') }}">Manage products</a></p></div>
+        <div class="admin-heading"><p class="page-eyebrow">J.E ESSENTIALS · ADMINISTRATION</p><h2>Admin Dashboard</h2><p>Manage customer orders, product listings, user access, and inquiries.</p><p><a class="admin-quick-link" href="{{ path('app_admin_product_index') }}">Manage products <span aria-hidden="true">&rarr;</span></a> &nbsp; <a class="admin-quick-link" href="{{ path('app_admin_user_index') }}">Manage users <span aria-hidden="true">&rarr;</span></a></p></div>
         {% for message in app.flashes('success') %}<div class="update-message" role="status">{{ message }}</div>{% endfor %}
         {% for message in app.flashes('error') %}<div class="update-message error" role="alert">{{ message }}</div>{% endfor %}
         <section class="stats-grid">
-            {% for label, amount in {'Total Orders': statistics.total, 'Pending': statistics.pending, 'Approved': statistics.approved, 'Completed': statistics.completed} %}
+            {% for label, amount in {'Total Users': statistics.users, 'Total Staff': statistics.staff, 'Total Records': statistics.records, 'Total Orders': statistics.total, 'Pending': statistics.pending, 'Approved': statistics.approved, 'Completed': statistics.completed} %}
                 <div class="stat-card"><span class="stat-label">{{ label }}</span><span class="stat-number">{{ amount }}</span></div>
             {% endfor %}
         </section>
         <section class="orders-section">
             <div class="orders-section-header"><h3>Orders</h3><span class="orders-count">{{ orders|length }} {{ orders|length == 1 ? 'order' : 'orders' }}</span></div>
+            <form method="get" class="user-filters">
+                <label>Search customers <input type="search" name="q" value="{{ filters.q }}" placeholder="Customer name or email"></label>
+                <label>Status
+                    <select name="status">
+                        <option value="">All statuses</option>
+                        {% for status in ['pending', 'approved', 'cancelled', 'completed'] %}<option value="{{ status }}" {{ filters.status == status ? 'selected' : '' }}>{{ status|title }}</option>{% endfor %}
+                    </select>
+                </label>
+                <button type="submit" class="edit-btn">Filter Orders</button>
+                <a href="{{ path('app_admin_index') }}" class="cancel-edit">Clear</a>
+            </form>
             {% if orders is empty %}
                 <div class="empty-orders"><p>No orders have been placed yet.</p></div>
             {% else %}

@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+(() => {
     const body = document.body;
     const money = value => `₱${Number(value || 0).toLocaleString('en-PH', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
     const productsNode = document.getElementById('je-products');
@@ -29,35 +29,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const profileTrigger = document.getElementById('profileTrigger');
     const profileDropdown = document.getElementById('profileDropdown');
+    const notificationTrigger = document.getElementById('notificationTrigger');
+    const notificationDropdown = document.getElementById('notificationDropdown');
     if (profileTrigger && profileDropdown) {
         profileTrigger.addEventListener('click', event => {
             event.stopPropagation();
             const open = profileDropdown.classList.toggle('is-open');
             profileTrigger.setAttribute('aria-expanded', String(open));
-        });
-        document.addEventListener('click', event => {
-            if (!profileDropdown.contains(event.target) && !profileTrigger.contains(event.target)) {
-                profileDropdown.classList.remove('is-open');
-                profileTrigger.setAttribute('aria-expanded', 'false');
+            if (open) {
+                notificationDropdown?.classList.remove('is-open');
+                notificationTrigger?.setAttribute('aria-expanded', 'false');
             }
         });
     }
 
-    const notificationTrigger = document.getElementById('notificationTrigger');
-    const notificationDropdown = document.getElementById('notificationDropdown');
     if (notificationTrigger && notificationDropdown) {
         notificationTrigger.addEventListener('click', event => {
             event.stopPropagation();
             const open = notificationDropdown.classList.toggle('is-open');
             notificationTrigger.setAttribute('aria-expanded', String(open));
-        });
-        document.addEventListener('click', event => {
-            if (!event.target.closest('#notificationNav')) {
-                notificationDropdown.classList.remove('is-open');
-                notificationTrigger.setAttribute('aria-expanded', 'false');
+            if (open) {
+                profileDropdown?.classList.remove('is-open');
+                profileTrigger?.setAttribute('aria-expanded', 'false');
             }
         });
     }
+
+    document.addEventListener('click', event => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        if (!target.closest('#profileNav')) {
+            profileDropdown?.classList.remove('is-open');
+            profileTrigger?.setAttribute('aria-expanded', 'false');
+        }
+        if (!target.closest('#notificationNav')) {
+            notificationDropdown?.classList.remove('is-open');
+            notificationTrigger?.setAttribute('aria-expanded', 'false');
+        }
+    });
 
     const cartOverlay = document.getElementById('cartModalOverlay');
     const cartItems = document.getElementById('cartItems');
@@ -175,6 +184,13 @@ document.addEventListener('DOMContentLoaded', () => {
         cartOverlay?.classList.add('is-open');
         body.classList.add('modal-open');
     }
+    function renderCartLoading() {
+        if (!cartItems) return;
+        const loading = document.createElement('p');
+        loading.className = 'cart-empty';
+        loading.textContent = 'Loading your cart…';
+        cartItems.replaceChildren(loading);
+    }
     function closeCart() {
         cartOverlay?.classList.remove('is-open');
         body.classList.remove('modal-open');
@@ -190,12 +206,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('cartTrigger')?.addEventListener('click', async event => {
         event.preventDefault();
+        profileDropdown?.classList.remove('is-open');
+        profileTrigger?.setAttribute('aria-expanded', 'false');
+        notificationDropdown?.classList.remove('is-open');
+        notificationTrigger?.setAttribute('aria-expanded', 'false');
+        openCart();
+        renderCartLoading();
         try {
             renderCart(await cartRequest('get'));
-            openCart();
         } catch (error) {
             showCartError(error.message);
-            openCart();
         }
     });
     document.getElementById('cartCheckoutBtn')?.addEventListener('click', () => {
@@ -258,7 +278,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         document.querySelectorAll('.btn-add[data-product-id]').forEach(button => {
-            button.addEventListener('click', () => openProduct(button.dataset.productId));
+            button.addEventListener('click', event => {
+                event.preventDefault();
+                openProduct(button.dataset.productId);
+            });
         });
         document.getElementById('productModalClose')?.addEventListener('click', closeProduct);
         productOverlay.addEventListener('click', event => {
@@ -346,6 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!input) return;
             input.type = input.type === 'password' ? 'text' : 'password';
             button.setAttribute('aria-label', input.type === 'password' ? 'Show password' : 'Hide password');
+            input.focus();
         });
     });
 
@@ -353,7 +377,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.key === 'Escape') {
             closeCart();
             productOverlay?.classList.remove('is-open');
+            profileDropdown?.classList.remove('is-open');
+            profileTrigger?.setAttribute('aria-expanded', 'false');
+            notificationDropdown?.classList.remove('is-open');
+            notificationTrigger?.setAttribute('aria-expanded', 'false');
             body.classList.remove('modal-open');
         }
     });
-});
+})();

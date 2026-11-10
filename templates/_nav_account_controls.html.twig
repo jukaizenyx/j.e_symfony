@@ -1,0 +1,53 @@
+{% set cartCount = 0 %}
+{% for entry in app.session.get('cart', []) %}
+    {% set cartCount = cartCount + entry.qty %}
+{% endfor %}
+<a href="{{ path('app_cart') }}" class="cart-btn" id="cartTrigger" aria-label="View cart">
+    <img src="{{ asset('images/cart-plus-svgrepo-com.svg') }}" alt="">
+    <span class="cart-count" id="cartCount">{{ cartCount }}</span>
+</a>
+{% if app.user %}
+    {% set userNotifications = app.user.notifications|slice(0, 20) %}
+    {% set unreadNotifications = userNotifications|filter(notification => not notification.isRead)|length %}
+    <div class="notification-nav" id="notificationNav">
+        <button type="button" class="notification-btn" id="notificationTrigger" aria-label="Notifications" aria-expanded="false">
+            <span class="notification-icon">🔔</span>
+            {% if unreadNotifications > 0 %}<span class="notification-count">{{ unreadNotifications }}</span>{% endif %}
+        </button>
+        <div class="notification-dropdown" id="notificationDropdown">
+            <div class="notification-header"><strong>Notifications</strong></div>
+            <div class="notification-list">
+                {% for notification in userNotifications %}
+                    <a href="{{ path('app_account_orders') }}" class="notification-item{{ notification.isRead ? '' : ' unread' }}">
+                        <span class="notification-message">{{ notification.message }}</span>
+                        <small>{{ notification.createdAt|date('M j, Y g:i A') }}</small>
+                    </a>
+                {% else %}
+                    <div class="notification-empty">No notifications yet.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="profile-nav" id="profileNav">
+        <button type="button" class="profile-btn" id="profileTrigger" aria-haspopup="true" aria-expanded="false">
+            <span class="profile-avatar">{{ app.user.username|first|upper }}</span>
+            <span class="profile-name">{{ app.user.username }}</span>
+        </button>
+        <div class="profile-dropdown" id="profileDropdown">
+            {% if is_granted('ROLE_STAFF') %}<a href="{{ path('app_staff_product_index') }}">Manage My Products</a>{% endif %}
+            <a href="{{ path('app_account_orders') }}">Orders</a>
+            <a href="{{ path('app_account_profile') }}">Profile</a>
+            <a href="{{ path('app_account_settings') }}">Settings</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <hr>
+                <a href="{{ path('app_admin_index') }}">Admin Dashboard</a>
+                <a href="{{ path('app_admin_product_index') }}">Manage Products</a>
+                <a href="{{ path('app_admin_user_index') }}">Manage Users</a>
+            {% endif %}
+            <hr>
+            <a href="{{ path('app_logout') }}">Log Out</a>
+        </div>
+    </div>
+{% else %}
+    <a href="{{ path('app_login') }}" class="account-link">LOG IN</a>
+{% endif %}

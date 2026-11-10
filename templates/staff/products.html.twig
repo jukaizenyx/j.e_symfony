@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Products — J.E Essentials{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('shop_css/shop.css') }}"><link rel="stylesheet" href="{{ asset('admin_css/admin.css') }}"><link rel="stylesheet" href="{{ asset('admin_css/products.css') }}">{% endblock %}
+
+{% block body %}
+    {% include '_admin_nav.html.twig' %}
+    <main class="products-page">
+        <div class="products-header"><div><p class="page-eyebrow">J.E ESSENTIALS · STAFF CATALOG</p><h1>My Products</h1><p class="page-intro">You can manage only products created by your account.</p></div><a class="btn-primary" href="{{ path('app_staff_product_new') }}">Add Product</a></div>
+        {% for message in app.flashes('success') %}<div class="products-alert success" role="status">{{ message }}</div>{% endfor %}
+        {% for message in app.flashes('error') %}<div class="products-alert error" role="alert">{{ message }}</div>{% endfor %}
+        <form method="get" class="user-filters">
+            <label>Search products <input type="search" name="q" value="{{ search }}" placeholder="Product name or description"></label>
+            <button type="submit" class="edit-btn">Search</button>
+            <a href="{{ path('app_staff_product_index') }}" class="cancel-edit">Clear</a>
+        </form>
+        <div class="products-table-wrapper">
+            <table class="products-table">
+                <thead><tr><th>Image</th><th>Name</th><th>Sizes &amp; Prices</th><th>Actions</th></tr></thead>
+                <tbody>
+                    {% for product in products %}
+                        <tr>
+                            <td><img src="{{ asset(product.image) }}" alt="{{ product.name }}" class="product-image"></td>
+                            <td><strong>{{ product.name }}</strong><br>{{ product.description|slice(0, 100) }}</td>
+                            <td><div class="sizes-list">{% for size, price in productSizes[product.id] %}<span>{{ size }} — ₱{{ price|number_format(2) }}</span>{% else %}<span>No sizes</span>{% endfor %}</div></td>
+                            <td><div class="action-buttons">
+                                <a href="{{ path('app_staff_product_edit', { id: product.id }) }}" class="edit-btn">Edit</a>
+                                <form method="post" action="{{ path('app_staff_product_delete', { id: product.id }) }}" onsubmit="return confirm('Delete this product?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_staff_product_' ~ product.id) }}"><button type="submit" class="delete-btn">Delete</button>
+                                </form>
+                            </div></td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="4">You have not created any products yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+{% endblock %}

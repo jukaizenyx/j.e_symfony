@@ -7,9 +7,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrderItemRepository::class)]
-#[ORM\Table(name: 'order_items', indexes: [
-    new ORM\Index(name: 'idx_order_items_order_id', columns: ['order_id']),
-])]
+#[ORM\Table(name: 'order_items', options: ['charset' => 'utf8mb4', 'collation' => 'utf8mb4_general_ci', 'engine' => 'InnoDB'])]
+#[ORM\Index(name: 'idx_order_items_order_id', columns: ['order_id'])]
 class OrderItem
 {
     #[ORM\Id]
@@ -18,7 +17,7 @@ class OrderItem
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'items')]
-    #[ORM\JoinColumn(name: 'order_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'order_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE', foreignKeyName: 'order_items_ibfk_1')]
     private ?Order $order = null;
 
     #[ORM\Column(name: 'product_id', type: Types::INTEGER, options: ['unsigned' => true])]

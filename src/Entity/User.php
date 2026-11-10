@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: 'users')]
+#[ORM\Table(name: 'users', options: ['charset' => 'utf8mb4', 'collation' => 'utf8mb4_general_ci', 'engine' => 'InnoDB'])]
 #[ORM\UniqueConstraint(name: 'username', columns: ['username'])]
 #[ORM\UniqueConstraint(name: 'email', columns: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -53,6 +53,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(name: 'is_admin', type: Types::BOOLEAN, options: ['default' => false])]
     private bool $isAdmin = false;
+
+    #[ORM\Column(name: 'is_staff', type: Types::BOOLEAN, options: ['default' => false])]
+    private bool $isStaff = false;
+
+    #[ORM\Column(name: 'is_active', type: Types::BOOLEAN, options: ['default' => true])]
+    private bool $isActive = true;
 
     /**
      * @var Collection<int, LoginToken>
@@ -206,6 +212,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsAdmin(bool $isAdmin): static
     {
         $this->isAdmin = $isAdmin;
+        if ($isAdmin) {
+            $this->isStaff = false;
+        }
+
+        return $this;
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->isStaff && !$this->isAdmin;
+    }
+
+    public function setIsStaff(bool $isStaff): static
+    {
+        $this->isStaff = $isStaff && !$this->isAdmin;
+
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }
@@ -256,7 +289,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRoles(): array
     {
-        return $this->isAdmin ? ['ROLE_ADMIN', 'ROLE_USER'] : ['ROLE_USER'];
+        if ($this->isAdmin) {
+            return ['ROLE_ADMIN', 'ROLE_USER'];
+        }
+
+        return $this->isStaff ? ['ROLE_STAFF', 'ROLE_USER'] : ['ROLE_USER'];
     }
 
     public function eraseCredentials(): void

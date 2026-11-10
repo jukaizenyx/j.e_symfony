@@ -73,6 +73,7 @@ a {
   z-index: 50;
 }
 .site-nav .site-nav-inner {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -150,6 +151,7 @@ a {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
+    z-index: 1;
   }
   .main-nav ul {
     flex-direction: column;
@@ -176,6 +178,8 @@ a {
 }
 
 .shop-cart-nav {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   gap: 20px;
@@ -380,7 +384,7 @@ a {
   visibility: hidden;
   transform: translateY(-6px);
   transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
-  z-index: 60;
+  z-index: 1001;
 }
 .profile-dropdown.is-open {
   opacity: 1;
@@ -652,6 +656,7 @@ a {
 }
 
 .btn-add {
+  display: block;
   margin: 12px 18px 18px;
   padding: 10px;
   border: 1px solid var(--color-charcoal);
@@ -660,6 +665,9 @@ a {
   font-family: var(--font-body);
   font-size: 0.9rem;
   cursor: pointer;
+  color: var(--color-charcoal);
+  text-align: center;
+  text-decoration: none;
   transition: background 0.2s ease, color 0.2s ease;
 }
 .btn-add:hover {
@@ -1471,7 +1479,7 @@ a {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
   overflow: hidden;
   display: none;
-  z-index: 1000;
+  z-index: 1001;
 }
 
 .notification-dropdown.is-open {

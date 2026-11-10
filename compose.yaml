@@ -32,12 +32,14 @@ services:
       dockerfile: Dockerfile
     container_name: je_essentials_php
     restart: unless-stopped
+    environment:
+      PHP_CLI_SERVER_WORKERS: "4"
     working_dir: /var/www/html
     volumes:
       - .:/var/www/html
     ports:
       - "8000:8000"
-    command: php -S 0.0.0.0:8000 -t public public/index.php
+    command: php -d upload_max_filesize=10M -d post_max_size=12M -S 0.0.0.0:8000 -t public public/router.php
     depends_on:
       - je_essentials_mysql
     networks:

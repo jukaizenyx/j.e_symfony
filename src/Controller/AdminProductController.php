@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Entity\User;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
+use App\Service\ProductManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -18,9 +20,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class AdminProductController extends AbstractController
 {
     #[Route('', name: 'index', methods: ['GET'])]
-    public function index(ProductRepository $products): Response
+    public function index(Request $request, ProductRepository $products): Response
     {
-        $productList = $products->findBy([], ['id' => 'DESC']);
+        $search = trim((string) $request->query->get('q', ''));
+        $productList = $products->findForManagement(search: $search);
         $productSizes = [];
         foreach ($productList as $product) {
             $sizes = json_decode($product->getSizes(), true);
@@ -30,28 +33,47 @@ class AdminProductController extends AbstractController
         return $this->render('admin_product/index.html.twig', [
             'products' => $productList,
             'productSizes' => $productSizes,
+            'search' => $search,
         ]);
     }
 
     #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, ProductManager $productManager): Response
     {
         $product = new Product();
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $product->setSizes($this->encodeSizes($form->get('sizes')->getData()));
-            if (!$this->validSizes($product->getSizes())) {
+            if (!$productManager->applySizes($product, $form->get('sizes')->getData())) {
                 $form->get('sizes')->addError(new FormError('Sizes must be a non-empty JSON object with non-negative numeric prices.'));
             } else {
-                $sizes = json_decode($product->getSizes(), true);
-                $product->setPrice(number_format((float) reset($sizes), 2, '.', ''));
-                $entityManager->persist($product);
-                $entityManager->flush();
-                $this->addFlash('success', 'Product added.');
+                $imageFile = $form->get('imageFile')->getData();
+                if (!($imageFile instanceof UploadedFile)) {
+                    $form->get('imageFile')->addError(new FormError('Choose an image for this product.'));
+                } else {
+                    $imagePath = $productManager->storeImage($imageFile);
+                    $product->setImage($imagePath);
+                    $owner = $this->getUser();
+                    if (!$owner instanceof User) {
+                        throw $this->createAccessDeniedException();
+                    }
+                    $product->setCreatedBy($owner);
+                    $entityManager->persist($product);
+                    try {
+                        $entityManager->flush();
+                    } catch (\Throwable $exception) {
+                        try {
+                            $productManager->removeStoredImage($imagePath);
+                        } catch (\Throwable $cleanupException) {
+                            throw new \RuntimeException('The product could not be saved and its uploaded image could not be removed.', 0, $cleanupException);
+                        }
+                        throw $exception;
+                    }
+                    $this->addFlash('success', 'Product added.');
 
-                return $this->redirectToRoute('app_admin_product_index');
+                    return $this->redirectToRoute('app_admin_product_index');
+                }
             }
         }
 
@@ -70,26 +92,44 @@ class AdminProductController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
-    public function edit(Product $product, Request $request, EntityManagerInterface $entityManager): Response
+    public function edit(Product $product, Request $request, EntityManagerInterface $entityManager, ProductManager $productManager): Response
     {
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $product->setSizes($this->encodeSizes($form->get('sizes')->getData()));
-            if (!$this->validSizes($product->getSizes())) {
+            if (!$productManager->applySizes($product, $form->get('sizes')->getData())) {
                 $form->get('sizes')->addError(new FormError('Sizes must be a non-empty JSON object with non-negative numeric prices.'));
             } else {
-                $sizes = json_decode($product->getSizes(), true);
-                $product->setPrice(number_format((float) reset($sizes), 2, '.', ''));
-                $entityManager->flush();
+                $imageFile = $form->get('imageFile')->getData();
+                $imagePath = null;
+                if ($imageFile instanceof UploadedFile) {
+                    $imagePath = $productManager->storeImage($imageFile);
+                    $product->setImage($imagePath);
+                }
+                try {
+                    $entityManager->flush();
+                } catch (\Throwable $exception) {
+                    if ($imagePath !== null) {
+                        try {
+                            $productManager->removeStoredImage($imagePath);
+                        } catch (\Throwable $cleanupException) {
+                            throw new \RuntimeException('The product could not be saved and its uploaded image could not be removed.', 0, $cleanupException);
+                        }
+                    }
+                    throw $exception;
+                }
                 $this->addFlash('success', 'Product updated.');
 
                 return $this->redirectToRoute('app_admin_product_index');
             }
         }
 
-        return $this->render('admin_product/form.html.twig', ['form' => $form->createView(), 'title' => 'Edit product']);
+        return $this->render('admin_product/form.html.twig', [
+            'form' => $form->createView(),
+            'title' => 'Edit product',
+            'currentImage' => $product->getImage(),
+        ]);
     }
 
     #[Route('/{id}/delete', name: 'delete', requirements: ['id' => '\d+'], methods: ['POST'])]
@@ -106,36 +146,4 @@ class AdminProductController extends AbstractController
         return $this->redirectToRoute('app_admin_product_index');
     }
 
-    private function validSizes(string $sizes): bool
-    {
-        $decoded = json_decode($sizes, true);
-        if (!is_array($decoded) || $decoded === [] || array_is_list($decoded)) {
-            return false;
-        }
-
-        foreach ($decoded as $size => $price) {
-            if (!is_string($size) || trim($size) === '' || !is_numeric($price) || (float) $price < 0) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @param list<array{size?: string, price?: int|float|string|null}> $rows
-     */
-    private function encodeSizes(array $rows): string
-    {
-        $sizes = [];
-        foreach ($rows as $row) {
-            $size = trim((string) ($row['size'] ?? ''));
-            $price = $row['price'] ?? null;
-            if ($size !== '' && $price !== null && $price !== '') {
-                $sizes[$size] = (float) $price;
-            }
-        }
-
-        return json_encode($sizes, JSON_THROW_ON_ERROR);
-    }
 }

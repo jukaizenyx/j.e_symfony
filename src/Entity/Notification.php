@@ -7,10 +7,9 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: NotificationRepository::class)]
-#[ORM\Table(name: 'notifications', indexes: [
-    new ORM\Index(name: 'fk_notifications_user', columns: ['user_id']),
-    new ORM\Index(name: 'fk_notifications_order', columns: ['order_id']),
-])]
+#[ORM\Table(name: 'notifications', options: ['charset' => 'utf8mb4', 'collation' => 'utf8mb4_general_ci', 'engine' => 'InnoDB'])]
+#[ORM\Index(name: 'fk_notifications_user', columns: ['user_id'])]
+#[ORM\Index(name: 'fk_notifications_order', columns: ['order_id'])]
 class Notification
 {
     #[ORM\Id]
@@ -19,11 +18,11 @@ class Notification
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'notifications')]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE', foreignKeyName: 'fk_notifications_user')]
     private ?User $user = null;
 
     #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'notifications')]
-    #[ORM\JoinColumn(name: 'order_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    #[ORM\JoinColumn(name: 'order_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL', foreignKeyName: 'fk_notifications_order')]
     private ?Order $order = null;
 
     #[ORM\Column(name: 'message', type: Types::STRING, length: 255)]

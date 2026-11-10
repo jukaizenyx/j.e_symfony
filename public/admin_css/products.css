@@ -6,7 +6,11 @@
 .product-form .form-group{margin-bottom:15px}
 .product-form .form-group label{display:block;margin-bottom:6px;font-weight:600}
 .product-form .form-group input,.product-form .form-group textarea{width:100%;padding:11px 13px;border:1px solid #ddd;border-radius:8px;box-sizing:border-box}
+.product-form .form-group input[type="file"]{background:#fbf8f2;cursor:pointer}
 .product-form .form-group textarea{min-height:100px;resize:vertical}
+.product-form .form-help{margin:8px 0;color:#70685d;font-size:.9rem}
+.current-product-image{display:flex;align-items:center;gap:12px;margin-top:12px;color:#70685d;font-size:.9rem}
+.current-product-image img{width:88px;height:88px;object-fit:cover;border-radius:8px;border:1px solid #e8e1d6}
 .sizes-section{margin-bottom:20px}
 .sizes-section h3{margin-bottom:10px}
 .size-row{display:flex;gap:10px;margin-bottom:10px}
@@ -16,6 +20,10 @@
 .add-size{background:#eee}
 .product-submit{padding:11px 20px;background:#222;color:#fff}
 .cancel-edit{margin-left:10px;color:#555}
+.user-filters{display:flex;align-items:end;flex-wrap:wrap;gap:12px;margin:0 0 20px;padding:16px;background:#fff;border:1px solid #ebe5dc;border-radius:12px}
+.user-filters label{display:grid;gap:5px;color:#5e554a;font-size:.88rem;font-weight:600}
+.user-filters input,.user-filters select{min-width:190px;padding:9px 11px;border:1px solid #ddd;border-radius:7px;background:#fff;font:inherit}
+.user-filters button{min-height:38px}
 .products-table-wrapper{overflow-x:auto;background:#fff;border-radius:12px}
 .products-table{width:100%;border-collapse:collapse}
 .products-table th,.products-table td{padding:15px;text-align:left;border-bottom:1px solid #eee}

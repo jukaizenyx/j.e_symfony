@@ -22,7 +22,7 @@
         <section class="products" aria-labelledby="products-heading">
             <div class="section-heading-row"><h2 id="products-heading">Skincare Products</h2></div>
             {% if usingFallbackCatalog %}
-                <p class="catalog-notice" role="status">Showing the original product collection while the database catalog is unavailable.</p>
+                <p class="catalog-notice" role="status">Showing the original product collection while the database catalog is empty or unavailable.</p>
             {% endif %}
             <div class="product-grid">
                 {% for item in products %}
@@ -31,7 +31,7 @@
                     <article class="product-card">
                         <figure class="product-image product-image-{{ loop.index0 }}"><img src="{{ asset(product.image) }}" alt="{{ product.name }}"></figure>
                         <div class="product-info"><h3>{{ product.name }}</h3><p class="product-price">₱{{ firstPrice|default(0)|number_format(0) }}</p></div>
-                        <button type="button" class="btn-add" data-product-id="{{ product.id }}" aria-label="View {{ product.name }} options">Add to cart</button>
+                        <a href="{{ path('app_shop_product_show', { id: product.id }) }}" class="btn-add" data-product-id="{{ product.id }}" aria-label="View {{ product.name }} options">Add to cart</a>
                     </article>
                 {% else %}
                     <p>No products are currently available.</p>

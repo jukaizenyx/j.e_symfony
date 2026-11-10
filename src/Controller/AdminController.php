@@ -8,6 +8,7 @@ use App\Entity\Order;
 use App\Entity\User;
 use App\Repository\ContactMessageRepository;
 use App\Repository\OrderRepository;
+use App\Repository\ProductRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,21 +24,36 @@ class AdminController extends AbstractController
     private const ORDER_STATUSES = ['pending', 'approved', 'cancelled', 'completed'];
 
     #[Route('', name: 'index', methods: ['GET'])]
-    public function index(OrderRepository $orders, ContactMessageRepository $messages): Response
+    public function index(
+        Request $request,
+        OrderRepository $orders,
+        ContactMessageRepository $messages,
+        ProductRepository $products,
+        UserRepository $users,
+    ): Response
     {
-        $orderList = $orders->findBy([], ['createdAt' => 'DESC']);
+        $filters = [
+            'q' => trim((string) $request->query->get('q', '')),
+            'status' => (string) $request->query->get('status', ''),
+        ];
+        $orderList = $orders->findForManagement($filters['q'], $filters['status']);
         $contactList = $messages->findBy([], ['createdAt' => 'DESC']);
-        $statistics = ['total' => count($orderList), 'pending' => 0, 'approved' => 0, 'cancelled' => 0, 'completed' => 0];
-        foreach ($orderList as $order) {
-            if (isset($statistics[$order->getStatus()])) {
-                ++$statistics[$order->getStatus()];
-            }
-        }
+        $statistics = [
+            'total' => $orders->count([]),
+            'pending' => $orders->countByStatus('pending'),
+            'approved' => $orders->countByStatus('approved'),
+            'cancelled' => $orders->countByStatus('cancelled'),
+            'completed' => $orders->countByStatus('completed'),
+            'users' => $users->count([]),
+            'staff' => $users->count(['isStaff' => true, 'isAdmin' => false]),
+            'records' => $orders->count([]) + $products->count([]) + $messages->count([]),
+        ];
 
         return $this->render('admin/index.html.twig', [
             'orders' => $orderList,
             'messages' => $contactList,
             'statistics' => $statistics,
+            'filters' => $filters,
             'unreadCount' => count(array_filter($contactList, static fn (ContactMessage $message): bool => $message->getStatus() === 'Unread')),
         ]);
     }

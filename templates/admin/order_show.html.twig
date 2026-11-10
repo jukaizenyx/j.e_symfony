@@ -6,7 +6,7 @@
 {% block body %}
     {% include '_admin_nav.html.twig' %}
     <main class="admin-container">
-        <p><a href="{{ path('app_admin_index') }}">&larr; Back to dashboard</a></p>
+        <a class="page-back-link" href="{{ path('app_admin_index') }}">&larr; Back to dashboard</a>
         <div class="admin-heading"><h2>Order #{{ order.id }}</h2><p>{{ order.createdAt|date('M j, Y g:i A') }} · {{ order.status|title }}</p></div>
         <section class="orders-section">
             <div class="orders-section-header"><h3>Customer Information</h3></div>

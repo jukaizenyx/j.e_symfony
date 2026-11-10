@@ -6,18 +6,24 @@
 {% block body %}
     {% include '_admin_nav.html.twig' %}
     <main class="products-page">
-        <div class="products-header"><h1>Products</h1><a class="btn-primary" href="{{ path('app_admin_product_new') }}">Add Product</a></div>
+        <div class="products-header"><div><p class="page-eyebrow">J.E ESSENTIALS · CATALOG</p><h1>Products</h1><p class="page-intro">Keep your product listings and size pricing up to date.</p></div><a class="btn-primary" href="{{ path('app_admin_product_new') }}">Add Product</a></div>
         {% for message in app.flashes('success') %}<div class="products-alert success" role="status">{{ message }}</div>{% endfor %}
         {% for message in app.flashes('error') %}<div class="products-alert error" role="alert">{{ message }}</div>{% endfor %}
+        <form method="get" class="user-filters">
+            <label>Search products <input type="search" name="q" value="{{ search }}" placeholder="Product name or description"></label>
+            <button type="submit" class="edit-btn">Search</button>
+            <a href="{{ path('app_admin_product_index') }}" class="cancel-edit">Clear</a>
+        </form>
         <div class="products-table-wrapper">
             <table class="products-table">
-                <thead><tr><th>ID</th><th>Image</th><th>Name</th><th>Sizes &amp; Prices</th><th>Actions</th></tr></thead>
+                <thead><tr><th>ID</th><th>Image</th><th>Name</th><th>Created By</th><th>Sizes &amp; Prices</th><th>Actions</th></tr></thead>
                 <tbody>
                     {% for product in products %}
                         <tr>
                             <td>{{ product.id }}</td>
                             <td><img src="{{ asset(product.image) }}" alt="{{ product.name }}" class="product-image"></td>
                             <td><a href="{{ path('app_admin_product_show', { id: product.id }) }}">{{ product.name }}</a></td>
+                            <td>{{ product.createdBy ? product.createdBy.username : 'Admin managed' }}</td>
                             <td><div class="sizes-list">{% for size, price in productSizes[product.id] %}<span>{{ size }} — ₱{{ price|number_format(2) }}</span>{% else %}<span>No sizes</span>{% endfor %}</div></td>
                             <td><div class="action-buttons">
                                 <a href="{{ path('app_admin_product_edit', { id: product.id }) }}" class="edit-btn">Edit</a>
@@ -27,7 +33,7 @@
                             </div></td>
                         </tr>
                     {% else %}
-                        <tr><td colspan="5">No products yet.</td></tr>
+                        <tr><td colspan="6">No products match your search.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>

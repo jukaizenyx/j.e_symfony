@@ -1,10 +1,14 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}J.E Eullaran Essentials | Joy and Elegance in Every Touch{% endblock %}
-{% block stylesheets %}<link rel="stylesheet" href="{{ asset('style_css/style.css') }}">{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="{{ asset('style_css/style.css') }}">{% if app.user %}<link rel="stylesheet" href="{{ asset('shop_css/shop.css') }}">{% endif %}{% endblock %}
 
 {% block body %}
-    {% include '_marketing_nav.html.twig' %}
+    {% if app.user %}
+        {% include '_nav.html.twig' %}
+    {% else %}
+        {% include '_marketing_nav.html.twig' %}
+    {% endif %}
     <main id="top">
         <section class="hero">
             <div class="hero-inner">

@@ -17,6 +17,7 @@ security:
         main:
             lazy: true
             provider: app_user_provider
+            user_checker: App\Security\UserChecker
             form_login:
                 login_path: app_login
                 check_path: app_login
@@ -42,9 +43,10 @@ security:
 
     # Note: Only the *first* matching rule is applied
     access_control:
-        - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/account, roles: ROLE_USER }
-        - { path: ^/checkout, roles: ROLE_USER }
+        - { path: ^/admin, allow_if: "is_granted('ROLE_ADMIN') and user != null and user.isActive()" }
+        - { path: ^/staff/products, allow_if: "is_granted('ROLE_STAFF') and user != null and user.isActive()" }
+        - { path: ^/account, allow_if: "is_granted('ROLE_USER') and user != null and user.isActive()" }
+        - { path: ^/checkout, allow_if: "is_granted('ROLE_USER') and user != null and user.isActive()" }
 
 when@test:
     security:

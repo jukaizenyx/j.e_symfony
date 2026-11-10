@@ -2,21 +2,13 @@
 
 namespace App\Service;
 
-use App\Entity\Product;
-use App\Repository\ProductRepository;
-use App\Service\ProductCatalog;
-use Doctrine\DBAL\Exception\ConnectionException;
-use Doctrine\DBAL\Exception\TableNotFoundException;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class CartService
 {
     public function __construct(
         private readonly RequestStack $requestStack,
-        private readonly ProductRepository $products,
-        private readonly ProductCatalog $catalog,
-        private readonly LoggerInterface $logger,
+        private readonly StoreCatalog $catalog,
     ) {
     }
 
@@ -123,32 +115,10 @@ class CartService
     }
 
     /**
-     * @return array{id: int, name: string, image: string, sizes: array<string, int|float>}|null
+     * @return array{id: int, name: string, image: string, description: string, sizes: array<string, int|float>}|null
      */
     private function findProduct(int $productId): ?array
     {
-        try {
-            $product = $this->products->find($productId);
-        } catch (TableNotFoundException|ConnectionException $exception) {
-            $this->logger->warning('Database catalog is unavailable; resolving the cart item from the original PHP product catalog.', [
-                'product_id' => $productId,
-                'exception' => $exception,
-            ]);
-
-            return $this->catalog->find($productId);
-        }
-
-        if (!$product instanceof Product) {
-            return null;
-        }
-
-        $sizes = json_decode($product->getSizes(), true);
-
-        return [
-            'id' => $product->getId(),
-            'name' => $product->getName(),
-            'image' => $product->getImage(),
-            'sizes' => is_array($sizes) ? $sizes : [],
-        ];
+        return $this->catalog->find($productId);
     }
 }

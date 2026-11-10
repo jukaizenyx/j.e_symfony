@@ -7,9 +7,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LoginTokenRepository::class)]
-#[ORM\Table(name: 'login_tokens', indexes: [
-    new ORM\Index(name: 'user_id', columns: ['user_id']),
-])]
+#[ORM\Table(name: 'login_tokens', options: ['charset' => 'utf8mb4', 'collation' => 'utf8mb4_general_ci', 'engine' => 'InnoDB'])]
+#[ORM\Index(name: 'user_id', columns: ['user_id'])]
 class LoginToken
 {
     #[ORM\Id]
@@ -18,7 +17,7 @@ class LoginToken
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'loginTokens')]
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE', foreignKeyName: 'login_tokens_ibfk_1')]
     private ?User $user = null;
 
     #[ORM\Column(name: 'token_hash', type: Types::STRING, length: 255)]

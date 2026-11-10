@@ -6,7 +6,7 @@
 {% block body %}
     {% include '_admin_nav.html.twig' %}
     <main class="admin-container">
-        <p><a href="{{ path('app_admin_index') }}">&larr; Back to dashboard</a></p>
+        <a class="page-back-link" href="{{ path('app_admin_index') }}">&larr; Back to dashboard</a>
         <section class="inquiry-card{{ message.status == 'Unread' ? ' is-unread' : '' }}">
             <div class="inquiry-header"><div><p class="admin-label">CUSTOMER INQUIRY</p><h1>{{ message.subject }}</h1><p class="inquiry-sender">{{ message.name }} · <a href="mailto:{{ message.email }}">{{ message.email }}</a></p></div><span class="inquiry-status inquiry-status-{{ message.status|lower }}">{{ message.status }}</span></div>
             <p class="inquiry-date">{{ message.createdAt|date('M j, Y g:i A') }}</p>
